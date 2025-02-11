@@ -73,17 +73,18 @@ function animatePlayer() {
 // Function to update and draw hearts
 function updateHearts() {
     hearts.forEach(heart => {
-        heart.y += 1;
-        if (heart.y > canvasHeight) heart.y = -heart.size;
+        heart.y += 1;  // Hearts move downward
+        if (heart.y > canvasHeight) heart.y = -heart.size;  // Reset position to top
     });
 }
 
 function drawHearts() {
     hearts.forEach(heart => {
-        ctx.fillStyle = 'pink';
+        ctx.fillStyle = 'pink';  // Замість зображення
         ctx.fillRect(heart.x, heart.y, heart.size, heart.size);
     });
 }
+
 // Function to update and draw enemies
 function updateEnemies() {
     enemies.forEach(enemy => {
@@ -94,12 +95,11 @@ function updateEnemies() {
     });
 }
 
-unction drawEnemies() {
+function drawEnemies() {
     enemies.forEach(enemy => {
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = 'black';  // Замість зображення
         ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
     });
-}
 }
 
 // Function to add and update catch effects
