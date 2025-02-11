@@ -11,33 +11,26 @@ canvas.height = canvasHeight;
 
 // Assets
 const heartImage = new Image();
-heartImage.src = 'assets/heart.png';  // Ensure this path is correct
+heartImage.src = 'assets/heart.png';
 
 const brokenHeartImage = new Image();
-brokenHeartImage.src = 'assets/broken-heart.png';  // Ensure this path is correct
+brokenHeartImage.src = 'assets/broken-heart.png';
 
 const ghostImage = new Image();
-ghostImage.src = 'assets/ghost.png';  // Ensure this path is correct
+ghostImage.src = 'assets/ghost.png';
 
 // Player setup
 const player = {
     x: canvasWidth / 2,
     y: canvasHeight - 60,
-    size: 60,  // Adjusted for larger player size
+    size: 60,
     speed: 5,
     dx: 0,
     dy: 0
 };
 
-// Animation variables
-let pulseFactor = 0;
-let pulseDirection = 1;
-
-// Hearts and enemies
+// Hearts array
 let hearts = [];
-let enemies = [];
-let ghosts = [];
-let caughtEffects = [];
 
 // Input handling
 let keys = {};
@@ -62,72 +55,30 @@ function movePlayer() {
     player.y = Math.max(0, Math.min(canvasHeight - player.size, player.y));
 }
 
-// Function to animate player with pulse effect
-function animatePlayer() {
-    pulseFactor += pulseDirection * 0.1;
-    if (pulseFactor > 5 || pulseFactor < -5) pulseDirection *= -1;
-
-    const animatedSize = player.size + pulseFactor;
-    ctx.drawImage(ghostImage, player.x, player.y, animatedSize, animatedSize);  // Use ghost image for player animation
+// Function to draw player
+function drawPlayer() {
+    ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
 }
 
 // Function to update and draw hearts
 function updateHearts() {
     hearts.forEach(heart => {
-        heart.y += 1;  // Hearts move downward
+        heart.y += 2;  // Hearts move downward
         if (heart.y > canvasHeight) heart.y = -heart.size;  // Reset position to top
+
+        // Check collision with player
+        if (player.x < heart.x + heart.size &&
+            player.x + player.size > heart.x &&
+            player.y < heart.y + heart.size &&
+            player.y + player.size > heart.y) {
+            heart.y = -heart.size;  // Reset heart position if caught
+        }
     });
 }
 
 function drawHearts() {
     hearts.forEach(heart => {
-        ctx.drawImage(heartImage, heart.x, heart.y, 50, 50);  // Adjusted size for hearts
-    });
-}
-
-// Function to update and draw enemies
-function updateEnemies() {
-    enemies.forEach(enemy => {
-        enemy.x += enemy.speed || 2;
-        if (enemy.x > canvasWidth || enemy.x < 0) {
-            enemy.speed = -enemy.speed;
-        }
-    });
-}
-
-function drawEnemies() {
-    enemies.forEach(enemy => {
-        ctx.drawImage(brokenHeartImage, enemy.x, enemy.y, 60, 60);  // Adjusted size for enemies
-    });
-}
-
-// Function to update and draw ghosts
-function updateGhosts() {
-    ghosts.forEach(ghost => {
-        ghost.y += 1.5;
-        if (ghost.y > canvasHeight) ghost.y = -ghost.size;
-    });
-}
-
-function drawGhosts() {
-    ghosts.forEach(ghost => {
-        ctx.drawImage(ghostImage, ghost.x, ghost.y, 70, 70);  // Adjusted size for ghosts
-    });
-}
-
-// Function to add and update catch effects
-function addCatchEffect(x, y) {
-    caughtEffects.push({ x, y, opacity: 1 });
-}
-
-function updateCatchEffects() {
-    caughtEffects.forEach((effect, index) => {
-        effect.opacity -= 0.02;
-        ctx.fillStyle = `rgba(255, 0, 0, ${effect.opacity})`;
-        ctx.font = '24px Arial';
-        ctx.fillText('💖', effect.x, effect.y);
-
-        if (effect.opacity <= 0) caughtEffects.splice(index, 1);
+        ctx.drawImage(heartImage, heart.x, heart.y, 50, 50);
     });
 }
 
@@ -136,25 +87,18 @@ function gameLoop() {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
     movePlayer();
-    animatePlayer();
+    drawPlayer();
     updateHearts();
     drawHearts();
-    updateEnemies();
-    drawEnemies();
-    updateGhosts();
-    drawGhosts();
-    updateCatchEffects();
 
     requestAnimationFrame(gameLoop);
 }
 
 // Initialize game
 function initGame() {
-    // Generate hearts, enemies, and ghosts
+    // Generate hearts
     for (let i = 0; i < 5; i++) {
-        hearts.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 50 });
-        enemies.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 60, speed: Math.random() * 2 + 1 });
-        ghosts.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 70 });
+        hearts.push({ x: Math.random() * (canvasWidth - 50), y: Math.random() * -canvasHeight, size: 50 });
     }
 
     gameLoop();
