@@ -2,98 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Valentine Pacman Game</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #ffe4e1;
-            font-family: 'Arial', sans-serif;
-            color: #333;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #game-message {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .heart {
-            position: absolute;
-            color: red;
-            font-size: 40px;
-            user-select: none;
-        }
-
-        /* Медіа-запити для мобільних пристроїв */
-        @media (max-width: 600px) {
-            .heart {
-                font-size: 30px;
-            }
-
-            #game-message {
-                font-size: 14px;
-            }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #ffe6e6;
+            border: 2px solid #ff6666;
         }
     </style>
 </head>
 <body>
-    <div id="game-message">Catch the hearts and get your Valentine message!</div>
-
-    <script>
-        const messages = [
-            "You're loved ❤️!",
-            "Happy Valentine's Day! 💘",
-            "Love is all around! 💖",
-            "A special smile just for you 😊",
-            "You are amazing! 💫"
-        ];
-
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.textContent = '❤️';
-            heart.className = 'heart';
-            heart.style.left = `${Math.random() * window.innerWidth}px`;
-            heart.style.top = '-50px';
-            heart.style.fontSize = `${Math.random() * 30 + 20}px`;
-
-            document.body.appendChild(heart);
-
-            // Анімація серця
-            let speed = Math.random() * 2 + 1;
-            function moveHeart() {
-                heart.style.top = `${parseFloat(heart.style.top) + speed}px`;
-
-                if (parseFloat(heart.style.top) > window.innerHeight) {
-                    heart.remove();
-                } else {
-                    requestAnimationFrame(moveHeart);
-                }
-            }
-            moveHeart();
-
-            // Обробка кліка по серцю
-            heart.addEventListener('click', () => {
-                alert(messages[Math.floor(Math.random() * messages.length)]);
-                heart.remove();
-            });
-        }
-
-        // Створювати нові серця кожні 800 мс
-        setInterval(createHeart, 800);
-    </script>
+    <canvas id="gameCanvas"></canvas>
+    <script src="game.js"></script>
 </body>
 </html>
