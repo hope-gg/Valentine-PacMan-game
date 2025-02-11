@@ -1,11 +1,11 @@
-// Basic setup for a simple Valentine-themed Pacman-style game
+// Basic setup for a Valentine-themed Pacman-style game
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Game settings
-const canvasWidth = 800;
-const canvasHeight = 600;
+// Responsive canvas size
+const canvasWidth = window.innerWidth * 0.9;
+const canvasHeight = window.innerHeight * 0.7;
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
@@ -30,21 +30,54 @@ const player = {
 let hearts = [];
 let score = 0;
 
-// Input handling
+// Finish point
+const finishPoint = {
+    x: canvasWidth / 2 - 50,
+    y: 50,
+    size: 100
+};
+
+let gameFinished = false;
+
+// Input handling for keyboard
 let keys = {};
 window.addEventListener('keydown', (e) => keys[e.key] = true);
 window.addEventListener('keyup', (e) => keys[e.key] = false);
 
+// Touch handling for mobile
+let touchStartX, touchStartY;
+
+canvas.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        player.dx = dx > 0 ? player.speed : -player.speed;
+        player.dy = 0;
+    } else {
+        player.dy = dy > 0 ? player.speed : -player.speed;
+        player.dx = 0;
+    }
+
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+});
+
+canvas.addEventListener('touchend', () => {
+    player.dx = 0;
+    player.dy = 0;
+});
+
 // Functions to handle movement
 function movePlayer() {
-    if (keys['ArrowLeft']) player.dx = -player.speed;
-    else if (keys['ArrowRight']) player.dx = player.speed;
-    else player.dx = 0;
-
-    if (keys['ArrowUp']) player.dy = -player.speed;
-    else if (keys['ArrowDown']) player.dy = player.speed;
-    else player.dy = 0;
-
     player.x += player.dx;
     player.y += player.dy;
 
@@ -56,6 +89,36 @@ function movePlayer() {
 // Function to draw player
 function drawPlayer() {
     ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
+}
+
+// Function to draw finish point
+function drawFinishPoint() {
+    ctx.fillStyle = 'lightblue';
+    ctx.fillRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
+    ctx.fillStyle = 'black';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Finish Here!', finishPoint.x + finishPoint.size / 2, finishPoint.y + finishPoint.size / 2);
+}
+
+// Function to check if player reached the finish point
+function checkFinish() {
+    if (
+        player.x < finishPoint.x + finishPoint.size &&
+        player.x + player.size > finishPoint.x &&
+        player.y < finishPoint.y + finishPoint.size &&
+        player.y + player.size > finishPoint.y
+    ) {
+        gameFinished = true;
+    }
+}
+
+// Function to display end message
+function displayEndMessage() {
+    ctx.fillStyle = 'red';
+    ctx.font = '40px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Happy Valentine\'s Day!', canvasWidth / 2, canvasHeight / 2);
 }
 
 // Function to update and draw hearts
@@ -100,10 +163,17 @@ function addHeart() {
 function gameLoop() {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
+    if (gameFinished) {
+        displayEndMessage();
+        return;
+    }
+
     movePlayer();
     drawPlayer();
     updateHearts();
     drawHearts();
+    drawFinishPoint();
+    checkFinish();
 
     // Display score
     ctx.fillStyle = 'black';
@@ -123,3 +193,4 @@ function initGame() {
 
 // Start the game
 initGame();
+
