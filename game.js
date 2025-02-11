@@ -1,11 +1,10 @@
-// Basic setup for a Valentine-themed Pacman-style game
-
+// Basic setup for Valentine-themed Pacman-style game with mobile adaptation
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Responsive canvas size
+// Set canvas size to fit mobile or desktop
 const canvasWidth = window.innerWidth * 0.9;
-const canvasHeight = window.innerHeight * 0.7;
+const canvasHeight = window.innerHeight * 0.8;
 canvas.width = canvasWidth;
 canvas.height = canvasHeight;
 
@@ -39,14 +38,13 @@ const finishPoint = {
 
 let gameFinished = false;
 
-// Input handling for keyboard
+// Input handling
 let keys = {};
 window.addEventListener('keydown', (e) => keys[e.key] = true);
 window.addEventListener('keyup', (e) => keys[e.key] = false);
 
-// Touch handling for mobile
+// Handle touch input for mobile
 let touchStartX, touchStartY;
-
 canvas.addEventListener('touchstart', (e) => {
     const touch = e.touches[0];
     touchStartX = touch.clientX;
@@ -54,30 +52,30 @@ canvas.addEventListener('touchstart', (e) => {
 });
 
 canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
     const touch = e.touches[0];
     const dx = touch.clientX - touchStartX;
     const dy = touch.clientY - touchStartY;
-
-    if (Math.abs(dx) > Math.abs(dy)) {
-        player.dx = dx > 0 ? player.speed : -player.speed;
-        player.dy = 0;
-    } else {
-        player.dy = dy > 0 ? player.speed : -player.speed;
-        player.dx = 0;
-    }
-
+    player.x += dx * 0.1;
+    player.y += dy * 0.1;
     touchStartX = touch.clientX;
     touchStartY = touch.clientY;
-});
 
-canvas.addEventListener('touchend', () => {
-    player.dx = 0;
-    player.dy = 0;
+    // Prevent player from moving off-screen
+    player.x = Math.max(0, Math.min(canvasWidth - player.size, player.x));
+    player.y = Math.max(0, Math.min(canvasHeight - player.size, player.y));
+    e.preventDefault();
 });
 
 // Functions to handle movement
 function movePlayer() {
+    if (keys['ArrowLeft']) player.dx = -player.speed;
+    else if (keys['ArrowRight']) player.dx = player.speed;
+    else player.dx = 0;
+
+    if (keys['ArrowUp']) player.dy = -player.speed;
+    else if (keys['ArrowDown']) player.dy = player.speed;
+    else player.dy = 0;
+
     player.x += player.dx;
     player.y += player.dy;
 
@@ -96,9 +94,8 @@ function drawFinishPoint() {
     ctx.fillStyle = 'lightblue';
     ctx.fillRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
     ctx.fillStyle = 'black';
-    ctx.font = 'bold 20px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Finish Here!', finishPoint.x + finishPoint.size / 2, finishPoint.y + finishPoint.size / 2);
+    ctx.font = '16px Arial';
+    ctx.fillText('Reach Here!', finishPoint.x + 10, finishPoint.y + 55);
 }
 
 // Function to check if player reached the finish point
@@ -193,4 +190,3 @@ function initGame() {
 
 // Start the game
 initGame();
-
