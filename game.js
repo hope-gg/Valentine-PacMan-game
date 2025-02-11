@@ -1,12 +1,11 @@
-// Basic setup for Valentine-themed Pacman-style game with mobile adaptation
+// Responsive setup for a Valentine-themed game
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Set canvas size to fit mobile or desktop
-const canvasWidth = window.innerWidth * 0.9;
-const canvasHeight = window.innerHeight * 0.8;
-canvas.width = canvasWidth;
-canvas.height = canvasHeight;
+// Set canvas size to fit the screen, with some padding for mobile
+canvas.width = window.innerWidth * 0.95;
+canvas.height = window.innerHeight * 0.85;
 
 // Assets
 const heartImage = new Image();
@@ -17,10 +16,10 @@ ghostImage.src = 'assets/ghost.png';
 
 // Player setup
 const player = {
-    x: canvasWidth / 2 - 30,
-    y: canvasHeight - 100,
-    size: 60,
-    speed: 5,
+    x: canvas.width / 2 - 30,
+    y: canvas.height - 100,
+    size: Math.min(canvas.width, canvas.height) / 10, // Adjust size based on screen dimensions
+    speed: 8, // Increased speed for smoother movement
     dx: 0,
     dy: 0
 };
@@ -31,9 +30,9 @@ let score = 0;
 
 // Finish point
 const finishPoint = {
-    x: canvasWidth / 2 - 50,
+    x: canvas.width / 2 - 50,
     y: 50,
-    size: 100
+    size: 80
 };
 
 let gameFinished = false;
@@ -43,30 +42,7 @@ let keys = {};
 window.addEventListener('keydown', (e) => keys[e.key] = true);
 window.addEventListener('keyup', (e) => keys[e.key] = false);
 
-// Handle touch input for mobile
-let touchStartX, touchStartY;
-canvas.addEventListener('touchstart', (e) => {
-    const touch = e.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-});
-
-canvas.addEventListener('touchmove', (e) => {
-    const touch = e.touches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
-    player.x += dx * 0.1;
-    player.y += dy * 0.1;
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-
-    // Prevent player from moving off-screen
-    player.x = Math.max(0, Math.min(canvasWidth - player.size, player.x));
-    player.y = Math.max(0, Math.min(canvasHeight - player.size, player.y));
-    e.preventDefault();
-});
-
-// Functions to handle movement
+// Adjust player movement
 function movePlayer() {
     if (keys['ArrowLeft']) player.dx = -player.speed;
     else if (keys['ArrowRight']) player.dx = player.speed;
@@ -80,16 +56,16 @@ function movePlayer() {
     player.y += player.dy;
 
     // Prevent player from moving off-screen
-    player.x = Math.max(0, Math.min(canvasWidth - player.size, player.x));
-    player.y = Math.max(0, Math.min(canvasHeight - player.size, player.y));
+    player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
+    player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
 }
 
-// Function to draw player
+// Draw player
 function drawPlayer() {
     ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
 }
 
-// Function to draw finish point
+// Draw finish point
 function drawFinishPoint() {
     ctx.fillStyle = 'lightblue';
     ctx.fillRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
@@ -98,7 +74,7 @@ function drawFinishPoint() {
     ctx.fillText('Reach Here!', finishPoint.x + 10, finishPoint.y + 55);
 }
 
-// Function to check if player reached the finish point
+// Check if player reached the finish point
 function checkFinish() {
     if (
         player.x < finishPoint.x + finishPoint.size &&
@@ -110,21 +86,21 @@ function checkFinish() {
     }
 }
 
-// Function to display end message
+// Display end message
 function displayEndMessage() {
     ctx.fillStyle = 'red';
     ctx.font = '40px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Happy Valentine\'s Day!', canvasWidth / 2, canvasHeight / 2);
+    ctx.fillText('Happy Valentine\'s Day!', canvas.width / 2, canvas.height / 2);
 }
 
-// Function to update and draw hearts
+// Update and draw hearts
 function updateHearts() {
     hearts.forEach((heart, index) => {
         heart.y += 2; // Move hearts down
-        if (heart.y > canvasHeight) {
+        if (heart.y > canvas.height) {
             heart.y = -heart.size; // Reset position to top
-            heart.x = Math.random() * (canvasWidth - heart.size);
+            heart.x = Math.random() * (canvas.width - heart.size);
         }
 
         // Check for collision with player
@@ -147,18 +123,18 @@ function drawHearts() {
     });
 }
 
-// Function to add a new heart
+// Add a new heart
 function addHeart() {
     hearts.push({
-        x: Math.random() * (canvasWidth - 40),
-        y: Math.random() * (canvasHeight / 2),
+        x: Math.random() * (canvas.width - 40),
+        y: Math.random() * (canvas.height / 2),
         size: 40
     });
 }
 
 // Game loop
 function gameLoop() {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (gameFinished) {
         displayEndMessage();
