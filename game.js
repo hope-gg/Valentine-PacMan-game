@@ -11,16 +11,19 @@ canvas.height = canvasHeight;
 
 // Assets
 const heartImage = new Image();
-heartImage.src = 'heart.png';  // Add your heart image path here
+heartImage.src = 'assets/heart.png';  // Ensure this path is correct
 
 const brokenHeartImage = new Image();
-brokenHeartImage.src = 'broken-heart.png';  // Add broken heart image path here
+brokenHeartImage.src = 'assets/broken-heart.png';  // Ensure this path is correct
+
+const ghostImage = new Image();
+ghostImage.src = 'assets/ghost.png';  // Ensure this path is correct
 
 // Player setup
 const player = {
     x: canvasWidth / 2,
     y: canvasHeight - 60,
-    size: 40,
+    size: 60,  // Adjusted for larger player size
     speed: 5,
     dx: 0,
     dy: 0
@@ -33,6 +36,7 @@ let pulseDirection = 1;
 // Hearts and enemies
 let hearts = [];
 let enemies = [];
+let ghosts = [];
 let caughtEffects = [];
 
 // Input handling
@@ -64,10 +68,7 @@ function animatePlayer() {
     if (pulseFactor > 5 || pulseFactor < -5) pulseDirection *= -1;
 
     const animatedSize = player.size + pulseFactor;
-    ctx.fillStyle = 'red';  // Замість зображення
-    ctx.beginPath();
-    ctx.arc(player.x + animatedSize / 2, player.y + animatedSize / 2, animatedSize / 2, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.drawImage(ghostImage, player.x, player.y, animatedSize, animatedSize);  // Use ghost image for player animation
 }
 
 // Function to update and draw hearts
@@ -80,8 +81,7 @@ function updateHearts() {
 
 function drawHearts() {
     hearts.forEach(heart => {
-        ctx.fillStyle = 'pink';  // Замість зображення
-        ctx.fillRect(heart.x, heart.y, heart.size, heart.size);
+        ctx.drawImage(heartImage, heart.x, heart.y, 50, 50);  // Adjusted size for hearts
     });
 }
 
@@ -90,15 +90,28 @@ function updateEnemies() {
     enemies.forEach(enemy => {
         enemy.x += enemy.speed || 2;
         if (enemy.x > canvasWidth || enemy.x < 0) {
-            enemy.speed = -enemy.speed || -2;
+            enemy.speed = -enemy.speed;
         }
     });
 }
 
 function drawEnemies() {
     enemies.forEach(enemy => {
-        ctx.fillStyle = 'black';  // Замість зображення
-        ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+        ctx.drawImage(brokenHeartImage, enemy.x, enemy.y, 60, 60);  // Adjusted size for enemies
+    });
+}
+
+// Function to update and draw ghosts
+function updateGhosts() {
+    ghosts.forEach(ghost => {
+        ghost.y += 1.5;
+        if (ghost.y > canvasHeight) ghost.y = -ghost.size;
+    });
+}
+
+function drawGhosts() {
+    ghosts.forEach(ghost => {
+        ctx.drawImage(ghostImage, ghost.x, ghost.y, 70, 70);  // Adjusted size for ghosts
     });
 }
 
@@ -128,6 +141,8 @@ function gameLoop() {
     drawHearts();
     updateEnemies();
     drawEnemies();
+    updateGhosts();
+    drawGhosts();
     updateCatchEffects();
 
     requestAnimationFrame(gameLoop);
@@ -135,10 +150,11 @@ function gameLoop() {
 
 // Initialize game
 function initGame() {
-    // Generate hearts and enemies
+    // Generate hearts, enemies, and ghosts
     for (let i = 0; i < 5; i++) {
-        hearts.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 30 });
-        enemies.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 40, speed: Math.random() * 2 + 1 });
+        hearts.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 50 });
+        enemies.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 60, speed: Math.random() * 2 + 1 });
+        ghosts.push({ x: Math.random() * (canvasWidth - 40), y: Math.random() * (canvasHeight - 40), size: 70 });
     }
 
     gameLoop();
