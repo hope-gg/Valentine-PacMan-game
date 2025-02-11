@@ -60,12 +60,14 @@ function movePlayer() {
 
 // Function to animate player with pulse effect
 function animatePlayer() {
-    // Pulse effect
     pulseFactor += pulseDirection * 0.1;
     if (pulseFactor > 5 || pulseFactor < -5) pulseDirection *= -1;
 
     const animatedSize = player.size + pulseFactor;
-    ctx.drawImage(heartImage, player.x, player.y, animatedSize, animatedSize);
+    ctx.fillStyle = 'red';  // Замість зображення
+    ctx.beginPath();
+    ctx.arc(player.x + animatedSize / 2, player.y + animatedSize / 2, animatedSize / 2, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 // Function to update and draw hearts
@@ -78,8 +80,10 @@ function updateHearts() {
 
 function drawHearts() {
     hearts.forEach(heart => {
-        ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
+        ctx.fillStyle = 'pink';  // Замість зображення
+        ctx.fillRect(heart.x, heart.y, heart.size, heart.size);
     });
+});
 }
 
 // Function to update and draw enemies
@@ -94,8 +98,10 @@ function updateEnemies() {
 
 function drawEnemies() {
     enemies.forEach(enemy => {
-        ctx.drawImage(brokenHeartImage, enemy.x, enemy.y, enemy.size, enemy.size);
+        ctx.fillStyle = 'black';  // Замість зображення
+        ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
     });
+});
 }
 
 // Function to add and update catch effects
@@ -142,3 +148,4 @@ function initGame() {
 
 // Start the game
 initGame();
+
