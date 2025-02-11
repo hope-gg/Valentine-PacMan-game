@@ -83,6 +83,7 @@ function drawHearts() {
         ctx.fillStyle = 'pink';  // Замість зображення
         ctx.fillRect(heart.x, heart.y, heart.size, heart.size);
     });
+}
 });
 }
 
@@ -101,6 +102,7 @@ function drawEnemies() {
         ctx.fillStyle = 'black';  // Замість зображення
         ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
     });
+}
 });
 }
 
@@ -148,4 +150,3 @@ function initGame() {
 
 // Start the game
 initGame();
-
