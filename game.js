@@ -84,8 +84,6 @@ function drawHearts() {
         ctx.fillRect(heart.x, heart.y, heart.size, heart.size);
     });
 }
-});
-}
 
 // Function to update and draw enemies
 function updateEnemies() {
@@ -102,8 +100,6 @@ function drawEnemies() {
         ctx.fillStyle = 'black';  // Замість зображення
         ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
     });
-}
-});
 }
 
 // Function to add and update catch effects
