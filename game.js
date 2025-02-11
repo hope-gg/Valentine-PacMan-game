@@ -13,16 +13,13 @@ canvas.height = canvasHeight;
 const heartImage = new Image();
 heartImage.src = 'assets/heart.png';
 
-const brokenHeartImage = new Image();
-brokenHeartImage.src = 'assets/broken-heart.png';
-
 const ghostImage = new Image();
 ghostImage.src = 'assets/ghost.png';
 
 // Player setup
 const player = {
     x: canvasWidth / 2,
-    y: canvasHeight - 60,
+    y: canvasHeight - 100,
     size: 60,
     speed: 5,
     dx: 0,
@@ -31,6 +28,7 @@ const player = {
 
 // Hearts array
 let hearts = [];
+let score = 0;
 
 // Input handling
 let keys = {};
@@ -56,53 +54,3 @@ function movePlayer() {
 }
 
 // Function to draw player
-function drawPlayer() {
-    ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
-}
-
-// Function to update and draw hearts
-function updateHearts() {
-    hearts.forEach(heart => {
-        heart.y += 2;  // Hearts move downward
-        if (heart.y > canvasHeight) heart.y = -heart.size;  // Reset position to top
-
-        // Check collision with player
-        if (player.x < heart.x + heart.size &&
-            player.x + player.size > heart.x &&
-            player.y < heart.y + heart.size &&
-            player.y + player.size > heart.y) {
-            heart.y = -heart.size;  // Reset heart position if caught
-        }
-    });
-}
-
-function drawHearts() {
-    hearts.forEach(heart => {
-        ctx.drawImage(heartImage, heart.x, heart.y, 50, 50);
-    });
-}
-
-// Game loop
-function gameLoop() {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    movePlayer();
-    drawPlayer();
-    updateHearts();
-    drawHearts();
-
-    requestAnimationFrame(gameLoop);
-}
-
-// Initialize game
-function initGame() {
-    // Generate hearts
-    for (let i = 0; i < 5; i++) {
-        hearts.push({ x: Math.random() * (canvasWidth - 50), y: Math.random() * -canvasHeight, size: 50 });
-    }
-
-    gameLoop();
-}
-
-// Start the game
-initGame();
