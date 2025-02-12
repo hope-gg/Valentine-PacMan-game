@@ -2,12 +2,12 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // ==== АДАПТАЦІЯ ДЛЯ СМАРТФОНІВ ====
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-window.addEventListener('resize', () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight * 0.9; // Уникаємо виходу за межі екрана
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
 let screen = 1; // 1 - Вхідний екран, 2 - Гра, 3 - Фінал
 let player = { collectedHearts: 0, lives: 5 };
@@ -23,42 +23,38 @@ const romanticMessages = [
 
 // ==== ФОНОВА АНІМАЦІЯ ====
 function drawBackground() {
-  ctx.fillStyle = "#FDF8F5";
+  ctx.fillStyle = "#FCF5EB"; // Бежевий фон
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 // ==== ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ ====
 const heartImage = new Image();
-heartImage.src = './assets/heart (1).png';
+heartImage.src = 'assets/heart (1).png';
 const brokenHeartImage = new Image();
-brokenHeartImage.src = './assets/broken-heart.png';
+brokenHeartImage.src = 'assets/broken-heart.png';
 const cupidImage = new Image();
-cupidImage.src = './assets/cupid.png';
+cupidImage.src = 'assets/cupid.png';
+const buttonImage = new Image();
+buttonImage.src = 'assets/love (1).png';
+const imagesLoaded = { heart: false, brokenHeart: false, cupid: false, button: false };
 
-let imagesLoaded = 0;
-const totalImages = 3;
-
-[heartImage, brokenHeartImage, cupidImage].forEach(img => {
-  img.onload = () => {
-    imagesLoaded++;
-    if (imagesLoaded === totalImages) {
-      gameLoop(); // Почати гру після завантаження всіх ресурсів
-    }
-  };
-});
+heartImage.onload = () => imagesLoaded.heart = true;
+brokenHeartImage.onload = () => imagesLoaded.brokenHeart = true;
+cupidImage.onload = () => imagesLoaded.cupid = true;
+buttonImage.onload = () => imagesLoaded.button = true;
 
 function allImagesLoaded() {
-  return imagesLoaded === totalImages;
+  return imagesLoaded.heart && imagesLoaded.brokenHeart && imagesLoaded.cupid && imagesLoaded.button;
 }
 
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
 function createHeart(isBroken = false) {
   return {
-    x: Math.random() * (canvas.width - 100),
-    y: -100,
-    size: 120,
+    x: Math.random() * (canvas.width - 150),
+    y: -120,
+    size: 150,
     isBroken: isBroken,
-    speed: 1.5 + Math.random() * 2,
+    speed: 2 + Math.random() * 2,
     opacity: 1,
     shrink: false
   };
@@ -73,7 +69,11 @@ function drawWelcomeScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  ctx.fillText("Spread Love", canvas.width / 2, canvas.height / 2 - 50);
+  ctx.fillText("SPREAD LOVE", canvas.width / 2, canvas.height / 2 - 50);
+
+  if (allImagesLoaded()) {
+    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
+  }
 }
 
 // ==== ГОЛОВНИЙ ІГРОВИЙ ЕКРАН ====
@@ -108,8 +108,13 @@ function drawEndScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "40px 'Playfair Display', serif";
   ctx.textAlign = "center";
+  
   const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
   ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+
+  if (allImagesLoaded()) {
+    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 80, 160, 160);
+  }
 }
 
 // ==== ОНОВЛЕННЯ ГРИ ====
@@ -130,7 +135,6 @@ canvas.addEventListener("click", (e) => {
     if ("vibrate" in navigator) navigator.vibrate(200);
     screen = 2;
     player.collectedHearts = 0;
-    player.lives = 5;
     hearts = [];
     for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
   } else if (screen === 2) {
@@ -140,11 +144,7 @@ canvas.addEventListener("click", (e) => {
           player.collectedHearts++;
           if (player.collectedHearts >= requiredHearts) {
             screen = 3;
-            if ("vibrate" in navigator) navigator.vibrate(300);
           }
-        } else {
-          player.lives--;
-          if ("vibrate" in navigator) navigator.vibrate(500);
         }
         heart.shrink = true;
       }
@@ -156,8 +156,7 @@ canvas.addEventListener("click", (e) => {
 
 // ==== ЗАПУСК ====
 function initGame() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  resizeCanvas();
   gameLoop();
 }
 window.addEventListener("load", initGame);
