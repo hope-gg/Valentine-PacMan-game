@@ -19,7 +19,7 @@
             flex-direction: column;
         }
         canvas {
-            border: 6px solid #C14444;
+            border: 8px solid #C14444;
             background: rgba(253, 243, 231, 0.9);
             display: block;
             max-width: 100%;
@@ -27,7 +27,7 @@
         }
         .title {
             font-family: 'Playfair Display', serif;
-            font-size: 40px;
+            font-size: 48px;
             color: #C14444;
             text-align: center;
             text-shadow: 2px 2px #9E2A2A;
@@ -39,7 +39,7 @@
             display: block;
             background: #C14444;
             color: white;
-            font-size: 22px;
+            font-size: 24px;
             padding: 15px 30px;
             border: none;
             cursor: pointer;
@@ -56,7 +56,7 @@
         #message-container {
             display: none;
             text-align: center;
-            font-size: 30px;
+            font-size: 32px;
             color: #C14444;
             font-family: 'Playfair Display', serif;
             margin-top: 20px;
@@ -77,11 +77,14 @@
     
     <script>
         function startGame() {
+            console.log("Game started!");
             document.getElementById("startButton").style.display = "none";
+            screen = 2;
         }
 
         document.getElementById("startButton").addEventListener("click", startGame);
     </script>
+
     <script src="game.js"></script>
 </body>
 </html>
