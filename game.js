@@ -68,14 +68,12 @@ function drawWelcomeScreen() {
   drawBackground();
   if (allImagesLoaded()) {
     ctx.drawImage(cupidImage, canvas.width / 2 - 50, 100, 100, 100);
+    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
   }
   ctx.fillStyle = "#D72638";
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
   ctx.fillText("LOVE IN THE AIR", canvas.width / 2, canvas.height / 2 - 50);
-  if (allImagesLoaded()) {
-    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
-  }
 }
 
 // ==== ГОЛОВНИЙ ІГРОВИЙ ЕКРАН ====
@@ -109,7 +107,7 @@ function drawEndScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "40px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2);
+  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width - 40);
 }
 
 // ==== ОБРОБКА КЛІКІВ ====
@@ -127,6 +125,8 @@ canvas.addEventListener("click", (e) => {
           if (player.collectedHearts >= requiredHearts) {
             screen = 3;
           }
+        } else {
+          player.collectedHearts = Math.max(0, player.collectedHearts - 1);
         }
         return false;
       }
