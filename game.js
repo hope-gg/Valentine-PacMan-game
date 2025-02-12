@@ -1,281 +1,151 @@
-// Basic setup for a simple Valentine-themed Pacman-style game
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// ====== 1. Responsive canvas with devicePixelRatio ======
+// ====== 1. Налаштування розміру Canvas (з урахуванням devicePixelRatio) ======
 function resizeCanvas() {
-  // Поточна щільність пікселів (Retina, тощо)
   const ratio = window.devicePixelRatio || 1;
-
-  // Поточні "логічні" розміри екрану
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  // Встановлюємо CSS-розміри (щоб вони збігалися з повним екраном)
   canvas.style.width = width + 'px';
   canvas.style.height = height + 'px';
-
-  // Внутрішня роздільність (фізичні px) = логічний розмір * devicePixelRatio
   canvas.width = width * ratio;
   canvas.height = height * ratio;
 
-  // Скидаємо попередній масштаб і налаштовуємо новий
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.scale(ratio, ratio);
 }
 
-// Викликаємо під час зміни розміру/орієнтації
+// Викликаємо при зміні розміру
 window.addEventListener('resize', () => {
-  // Змінюємо розмір Canvas
   resizeCanvas();
-  // За потреби можна знову викликати gameLoop або перемалювати (якщо потрібно)
-  // gameLoop(); // Якщо хочете постійно оновлювати розташування
 });
 
-// ====== 2. Завантаження ассетів (зображень) ======
-const heartImage = new Image();
-heartImage.src = 'assets/heart.png';
-
-const ghostImage = new Image();
-ghostImage.src = 'assets/ghost.png';
-
-ghostImage.onload = () => console.log('Ghost image loaded:', ghostImage.src);
-heartImage.onload = () => console.log('Heart image loaded:', heartImage.src);
-
-// ====== 3. Параметри гравця ======
-const player = {
-    x: 0, // ініціалізуємо пізніше, коли вже відомий розмір canvas
-    y: 0,
-    size: 100, // Increased size for better touch detection
-    speed: 5,  // Adjusted for smoother movement
-    target: null
-};
-
-// ====== 4. Інші ігрові змінні ======
+// ====== 2. Масив сердечок ======
 let hearts = [];
-let score = 0;
-let gameFinished = false;
 
-// Finish point
-const finishPoint = {
-    x: 0, // визначимо після resizeCanvas
-    y: 50,
-    size: 100
-};
+// Функція створення випадкового сердечка
+function createHeart() {
+  // Випадкові координати, розміри, швидкість
+  const ratio = window.devicePixelRatio || 1;
+  const cssWidth = canvas.width / ratio;
+  const cssHeight = canvas.height / ratio;
 
-// ====== 5. Функція руху гравця до цілі (клікнутого heart) ======
-function moveTowardsTarget() {
-    if (!player.target) return;
-
-    let dx = player.target.x - player.x;
-    let dy = player.target.y - player.y;
-    let distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance > player.speed) {
-        player.x += (dx / distance) * player.speed;
-        player.y += (dy / distance) * player.speed;
-    } else {
-        // Reached the target
-        player.x = player.target.x;
-        player.y = player.target.y;
-        player.target = null;
-    }
+  return {
+    x: Math.random() * cssWidth,     // по ширині довільно
+    y: -50,                          // починають над екраном
+    size: 30 + Math.random() * 30,   // від 30 до 60
+    speedY: 1 + Math.random() * 2,   // швидкість падіння
+    speedX: (Math.random() - 0.5) * 1, // невелике хитання вбік
+    angle: 0,
+    rotationSpeed: (Math.random() - 0.5) * 0.02 // обертання
+  };
 }
 
-// ====== 6. Малювання гравця ======
-function drawPlayer() {
-    ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
+// Іконка сердечка (приміром, Emoji) - або можна замінити на зображення
+const heartIcon = new Image();
+heartIcon.src = "data:image/svg+xml,%3Csvg width='100' height='90' viewBox='0 0 100 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23ff6699' d='M50 85.5l-6.5-5.5C15.2 53.8 0 40.5 0 24.6 0 10.8 10.1 0 22.5 0c6.9 0 13.6 3.2 17.9 8.6C44.8 3.2 51.5 0 58.4 0 70.9 0 81 10.8 81 24.6c0 15.9-15.2 29.2-43.5 55.4L50 85.5z'/%3E%3C/svg%3E";
+
+// ====== 3. Малювання градієнтного фону в Canvas ======
+function drawBackground() {
+  const ratio = window.devicePixelRatio || 1;
+  const cssWidth = canvas.width / ratio;
+  const cssHeight = canvas.height / ratio;
+
+  // Створюємо вертикальний (або діагональний) градієнт
+  const gradient = ctx.createLinearGradient(0, 0, cssWidth, cssHeight);
+  gradient.addColorStop(0, '#ffccee'); // ніжно-рожевий
+  gradient.addColorStop(1, '#eac1f2'); // ніжно-фіолетовий
+  
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, cssWidth, cssHeight);
 }
 
-// ====== 7. Малювання фінішної зони ======
-function drawFinishPoint() {
-    ctx.fillStyle = 'lightblue';
-    ctx.fillRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
-
-    ctx.strokeStyle = 'darkblue';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
-
-    ctx.fillStyle = 'black';
-    ctx.font = '18px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Reach Here!', 
-      finishPoint.x + finishPoint.size / 2, 
-      finishPoint.y + finishPoint.size / 2
-    );
-}
-
-// ====== 8. Перевірка, чи досягнуто фінішу ======
-function checkFinish() {
-    if (
-        player.x < finishPoint.x + finishPoint.size &&
-        player.x + player.size > finishPoint.x &&
-        player.y < finishPoint.y + finishPoint.size &&
-        player.y + player.size > finishPoint.y
-    ) {
-        gameFinished = true;
-    }
-}
-
-// ====== 9. Відображення фінального повідомлення ======
-// Додаємо масив фраз
-const endPhrases = [
-  "You are the song that my heart loves to sing.",
-  "All that you are is all that I’ll ever need.",
-  "Take my hand, take my whole life too, but I can't help falling in love with you",
-  "I love you, not just because of who you are, but for who I have become when I am with you.",
-  "Life is better when I have you by my side.",
-  "It’s been a journey … one I’d do all over again.",
-  "You're my Wonder Woman/Superman.",
-  "Every scar. Every flaw. Every imperfection. I love you.",
-  "Every love song is about you. Happy Valentine's Day!",
-  "I love that we've never lost the magic that makes us us.",
-  "You're in all of my best memories.",
-  "You give my heart peace. I love you so much.",
-  "You’re my happily ever after.",
-  "At the heart of it all, we’re friends. I love that, and I love you.",
-  "Happy Valentine’s Day! My favorite place in the world is next to you.",
-  "You may hold my hand for a while, but you hold my heart forever.",
-  "Thank you for being mine.",
-  "The best things in life are better with you.",
-  "I never believed in luck until I found you.",
-  "Whenever I'm with you, wherever we are, I'm home.",
-  "Every love story is beautiful but ours is my favorite.",
-  "You’re the one. I’ve never been so sure of anything in my whole life.",
-  "I fell in love with you because of all the small things you don’t even realize you’re doing.",
-  "Thank you for making me laugh and smile every single day since the day we met.",
-  "Like you and me, some things are just meant to be."
-];
-
-// ...
-
-function displayEndMessage() {
-    // Стилі тексту
-    ctx.fillStyle = 'red';
-    ctx.font = '40px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    // Координати центру з урахуванням devicePixelRatio
-    const ratio = window.devicePixelRatio || 1;
-    const centerX = (canvas.width / ratio) / 2;
-    const centerY = (canvas.height / ratio) / 2;
-
-    // Обираємо випадкову фразу
-    const randomIndex = Math.floor(Math.random() * endPhrases.length);
-    const randomPhrase = endPhrases[randomIndex];
-
-    // Виводимо фразу в центр екрану
-    ctx.fillText(randomPhrase, centerX, centerY);
-}
-
-
-// ====== 10. Оновлення та малювання сердечок ======
-function updateHearts() {
-    hearts.forEach((heart, index) => {
-        // Перевірка зіткнення з гравцем
-        if (
-            player.x < heart.x + heart.size &&
-            player.x + player.size > heart.x &&
-            player.y < heart.y + heart.size &&
-            player.y + player.size > heart.y
-        ) {
-            // Прибираємо сердечко
-            hearts.splice(index, 1);
-            score += 1;  // Збільшуємо рахунок
-            addHeart();  // Додаємо нове сердечко
-        }
-    });
-}
-
+// ====== 4. Малювання сердечок ======
 function drawHearts() {
-    hearts.forEach(heart => {
-        ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
-    });
+  hearts.forEach((heart) => {
+    // Зберігаємо поточний стан canvas
+    ctx.save();
+
+    // Трішки обертаємо сердечко навколо центру
+    ctx.translate(heart.x + heart.size / 2, heart.y + heart.size / 2);
+    ctx.rotate(heart.angle);
+
+    // Малюємо сердечко, зміщується, бо ми вже зсунули origin
+    ctx.drawImage(heartIcon, -heart.size / 2, -heart.size / 2, heart.size, heart.size);
+
+    ctx.restore();
+  });
 }
 
-// ====== 11. Додавання нового сердечка у випадкове місце ======
-function addHeart() {
-    // Знову ж таки, врахуйте devicePixelRatio для коректної «логічної» області
-    const ratio = window.devicePixelRatio || 1;
-    const cssWidth = canvas.width / ratio;
-    const cssHeight = canvas.height / ratio;
+// ====== 5. Оновлення сердечок (падіння) ======
+function updateHearts() {
+  const ratio = window.devicePixelRatio || 1;
+  const cssHeight = canvas.height / ratio;
 
-    hearts.push({
-        x: Math.random() * (cssWidth - 50),
-        y: Math.random() * (cssHeight / 2),
-        size: 60
-    });
+  hearts.forEach((heart) => {
+    heart.x += heart.speedX;
+    heart.y += heart.speedY;
+    heart.angle += heart.rotationSpeed;
+  });
+
+  // Видаляємо сердечка, які "злетіли" за нижню межу
+  hearts = hearts.filter((heart) => heart.y < cssHeight + 100);
 }
 
-// ====== 12. Обробка кліків ======
-canvas.addEventListener('click', (e) => {
-    let clickX = e.clientX;
-    let clickY = e.clientY;
-
-    // Якщо натиснули на одне з сердечок, встановимо його як ціль
-    hearts.forEach((heart) => {
-        if (
-            clickX > heart.x && clickX < heart.x + heart.size &&
-            clickY > heart.y && clickY < heart.y + heart.size
-        ) {
-            player.target = { x: heart.x, y: heart.y };
-        }
-    });
-});
-
-// ====== 13. Основний цикл гри (gameLoop) ======
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (gameFinished) {
-        displayEndMessage();
-        return;
-    }
-
-    moveTowardsTarget();
-    drawPlayer();
-    updateHearts();
-    drawHearts();
-    drawFinishPoint();
-    checkFinish();
-
-    // Відображення рахунку
-    ctx.fillStyle = 'black';
-    ctx.font = '24px Arial';
-    ctx.textAlign = 'left';
-    ctx.fillText(`Score: ${score}`, 20, 40);
-
-    requestAnimationFrame(gameLoop);
+// ====== 6. Відображення романтичного тексту по центру ======
+function drawRomanticText() {
+  const ratio = window.devicePixelRatio || 1;
+  const cssWidth = canvas.width / ratio;
+  const cssHeight = canvas.height / ratio;
+  
+  ctx.save();
+  ctx.fillStyle = '#cc0066';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  
+  // Налаштовуємо красивий шрифт
+  ctx.font = '48px "Dancing Script", cursive';
+  
+  // Малюємо текст по центру
+  ctx.fillText("Love is in the air...", cssWidth / 2, cssHeight / 2);
+  ctx.restore();
 }
 
-// ====== 14. Ініціалізація гри ======
-function initGame() {
-    // 1) Робимо Canvas повноекранним з урахуванням ratio
-    resizeCanvas();
-    
-    // 2) Вираховуємо «логічні» розміри (для початкових координат)
-    const ratio = window.devicePixelRatio || 1;
-    const cssWidth = canvas.width / ratio;
-    const cssHeight = canvas.height / ratio;
+// ====== 7. Основний цикл анімації ======
+function animate() {
+  // Очищаємо
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // 3) Початкове розташування гравця (по центру внизу)
-    player.x = cssWidth / 2 - player.size / 2;
-    player.y = cssHeight - player.size - 50;
+  // Малюємо градієнтний фон
+  drawBackground();
 
-    // 4) Початкове розташування фінішу (по центру вгорі)
-    finishPoint.x = cssWidth / 2 - finishPoint.size / 2;
-    finishPoint.y = 50;
+  // Оновлюємо й малюємо сердечка
+  updateHearts();
+  drawHearts();
 
-    // 5) Генеруємо перші сердечка
-    for (let i = 0; i < 7; i++) {
-        addHeart();
-    }
+  // Малюємо текст поверх
+  drawRomanticText();
 
-    // 6) Запускаємо цикл гри
-    gameLoop();
+  requestAnimationFrame(animate);
 }
 
-// Стартуємо гру після завантаження сторінки
-window.addEventListener('load', initGame);
+// ====== 8. Ініціалізація ======
+function init() {
+  resizeCanvas();
+
+  // Створимо певну кількість сердечок для старту
+  for (let i = 0; i < 15; i++) {
+    hearts.push(createHeart());
+  }
+
+  // Кожні 800 мс створюватимемо нове сердечко
+  setInterval(() => {
+    hearts.push(createHeart());
+  }, 800);
+
+  animate();
+}
+
+// Запуск після завантаження
+window.addEventListener('load', init);
