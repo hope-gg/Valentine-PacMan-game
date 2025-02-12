@@ -3,31 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Game 💖</title>
+    <title>Valentine's Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Merriweather&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            overflow: hidden;
+            font-family: 'Merriweather', serif;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
-            justify-content: center;
             align-items: center;
-            background: #ffccee;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            flex-direction: column;
         }
         canvas {
-            position: absolute;
+            border: 6px solid #C14444;
+            background: rgba(253, 243, 231, 0.9);
+            display: block;
+            max-width: 100%;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
         }
-        #lifeBar {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px;
+            color: #C14444;
+            text-align: center;
+            text-shadow: 2px 2px #9E2A2A;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .button {
+            display: block;
+            background: #C14444;
+            color: white;
+            font-size: 22px;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 20px auto;
+            font-family: 'Playfair Display', serif;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+        .button:hover {
+            background: #9E2A2A;
+            transform: scale(1.1);
+        }
+        #message-container {
+            display: none;
+            text-align: center;
+            font-size: 30px;
+            color: #C14444;
+            font-family: 'Playfair Display', serif;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
-    <img id="lifeBar" src="assets/lifeheartbar.jpeg" alt="Life Bar">
-    <canvas id="gameCanvas"></canvas>
+    <div id="game-container">
+        <h1 class="title">Valentine's Day Game</h1>
+        <canvas id="gameCanvas"></canvas>
+        <button class="button" id="startButton">Start</button>
+        <div id="message-container"></div>
+    </div>
+    
+    <script>
+        function startGame() {
+            document.getElementById("startButton").style.display = "none";
+        }
+
+        document.getElementById("startButton").addEventListener("click", startGame);
+    </script>
     <script src="game.js"></script>
 </body>
 </html>
