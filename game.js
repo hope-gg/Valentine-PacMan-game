@@ -24,22 +24,22 @@ const romanticMessages = [
 // ==== ФУНКЦІЯ ДЛЯ МАЛЮВАННЯ ФОНУ ====
 function drawBackground() {
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#ffccee'); // Світло-рожевий
-    gradient.addColorStop(1, '#eac1f2'); // Лавандово-рожевий
+    gradient.addColorStop(0, '#ffccee'); 
+    gradient.addColorStop(1, '#eac1f2'); 
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 // ==== ФОНОВІ АНІМАЦІЇ ====
 let floatingHearts = [];
-for (let i = 0; i < 30; i++) { 
+for (let i = 0; i < 40; i++) { 
   floatingHearts.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, speed: 0.7 + Math.random() * 1.5 });
 }
 
 function drawFloatingHearts() {
   ctx.fillStyle = "rgba(255, 102, 153, 0.3)";
   floatingHearts.forEach(heart => {
-    ctx.font = "32px Arial"; 
+    ctx.font = "36px Arial"; 
     ctx.fillText("❤️", heart.x, heart.y);
     heart.y += heart.speed;
     if (heart.y > canvas.height) heart.y = -10;
@@ -48,7 +48,7 @@ function drawFloatingHearts() {
 
 // ==== СЕРДЕЧКА ====
 function createHeart(isBroken = false) {
-  return { x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: 80, isBroken: isBroken, speed: 1 + Math.random() };
+  return { x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: 100, isBroken: isBroken, speed: 1 + Math.random() };
 }
 
 // ==== ВХІДНИЙ ЕКРАН ====
@@ -56,17 +56,17 @@ function drawWelcomeScreen() {
   drawBackground();
   drawFloatingHearts();
   ctx.fillStyle = '#cc0066';
-  ctx.font = '56px "Dancing Script", cursive'; 
+  ctx.font = '60px "Dancing Script", cursive'; 
   ctx.textAlign = 'center';
   ctx.fillText("Love is in the air...", canvas.width / 2, canvas.height / 2 - 80);
 
-  let pulse = Math.sin(Date.now() / 300) * 10 + 70;
+  let pulse = Math.sin(Date.now() / 300) * 10 + 80;
   ctx.fillStyle = "red";
   ctx.beginPath();
   ctx.arc(canvas.width / 2, canvas.height / 2 + 100, pulse, 0, Math.PI * 2);
   ctx.fill();
   ctx.fillStyle = "white";
-  ctx.font = "40px Arial";
+  ctx.font = "48px Arial";
   ctx.fillText("❤️", canvas.width / 2, canvas.height / 2 + 115);
 }
 
@@ -74,11 +74,11 @@ function drawWelcomeScreen() {
 function drawGameScreen() {
   drawBackground();
   ctx.fillStyle = "#cc0066";
-  ctx.font = "32px Arial"; 
-  ctx.fillText(`Catch the hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 100);
+  ctx.font = "40px Arial"; 
+  ctx.fillText(`Catch the hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 120);
 
   hearts.forEach(heart => {
-    ctx.font = heart.isBroken ? "64px Arial" : "80px Arial"; 
+    ctx.font = heart.isBroken ? "80px Arial" : "100px Arial"; 
     ctx.fillText(heart.isBroken ? "💔" : "❤️", heart.x, heart.y);
     heart.y -= heart.speed;
   });
@@ -91,17 +91,16 @@ function drawEndScreen() {
   drawBackground();
   drawFloatingHearts();
   ctx.fillStyle = "#cc0066";
-  ctx.font = "44px 'Dancing Script', cursive"; 
+  ctx.font = "56px 'Dancing Script', cursive"; 
   ctx.textAlign = "center";
   const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
   ctx.fillText(message, canvas.width / 2, canvas.height / 2);
 
-  let pulse = Math.sin(Date.now() / 200) * 5 + 1;
-  ctx.fillStyle = `rgba(255, 0, 0, ${pulse})`;
-  ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 100, 200, 80);
+  ctx.fillStyle = "red";
+  ctx.fillRect(canvas.width / 2 - 120, canvas.height / 2 + 100, 240, 90);
   ctx.fillStyle = "white";
-  ctx.font = "32px Arial";
-  ctx.fillText("Restart", canvas.width / 2, canvas.height / 2 + 150);
+  ctx.font = "36px Arial";
+  ctx.fillText("Restart", canvas.width / 2, canvas.height / 2 + 155);
 }
 
 // ==== ОНОВЛЕННЯ ГРИ ====
@@ -125,7 +124,7 @@ canvas.addEventListener("click", (e) => {
     for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3)); 
   } else if (screen === 2) {
     hearts = hearts.filter(heart => {
-      if (Math.abs(e.clientX - heart.x) < 50 && Math.abs(e.clientY - heart.y) < 50) {
+      if (Math.abs(e.clientX - heart.x) < 70 && Math.abs(e.clientY - heart.y) < 70) {
         if (!heart.isBroken) {
           player.collectedHearts++;
           if (player.collectedHearts >= requiredHearts) {
@@ -137,7 +136,14 @@ canvas.addEventListener("click", (e) => {
       return true;
     });
   } else if (screen === 3) {
-    screen = 1;
+    if (
+      e.clientX > canvas.width / 2 - 120 &&
+      e.clientX < canvas.width / 2 + 120 &&
+      e.clientY > canvas.height / 2 + 100 &&
+      e.clientY < canvas.height / 2 + 190
+    ) {
+      screen = 1; // Тепер перезапуск лише після кліку на "Restart"
+    }
   }
 });
 
