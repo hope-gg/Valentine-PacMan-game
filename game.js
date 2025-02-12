@@ -183,11 +183,3 @@ function initGame() {
 
 // Start the game
 initGame();
- < 7; i++) { // Increased initial number of hearts
-        addHeart();
-    }
-    gameLoop();
-}
-
-// Start the game
-initGame();
