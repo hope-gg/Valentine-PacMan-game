@@ -23,10 +23,10 @@ heartImage.onload = () => console.log('Heart image loaded:', heartImage.src);
 
 // Player setup
 const player = {
-    x: canvas.width / 2 - 30,
-    y: canvas.height - 120,
-    size: 60,
-    speed: 40,  // Increased speed for smoother movement on mobile
+    x: canvas.width / 2 - 50,
+    y: canvas.height - 150,
+    size: 80, // Increased size for better touch detection
+    speed: 50,  // Adjusted speed for smoother mobile movement
     dx: 0,
     dy: 0
 };
@@ -165,9 +165,9 @@ function drawHearts() {
 // Function to add a new heart
 function addHeart() {
     hearts.push({
-        x: Math.random() * (canvas.width - 40),
+        x: Math.random() * (canvas.width - 50),
         y: Math.random() * (canvas.height / 2),
-        size: 50 // Slightly larger hearts for better visibility on mobile
+        size: 60 // Slightly larger hearts for better visibility on mobile
     });
 }
 
