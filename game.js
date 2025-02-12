@@ -52,7 +52,7 @@ function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 150),
     y: -120,
-    size: 150,
+    size: 160, // Збільшене серце
     isBroken: isBroken,
     speed: 2 + Math.random() * 2,
     opacity: 1,
@@ -69,7 +69,7 @@ function drawWelcomeScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  ctx.fillText("SPREAD LOVE", canvas.width / 2, canvas.height / 2 - 50);
+  ctx.fillText("LOVE IN THE AIR", canvas.width / 2, canvas.height / 2 - 50);
 
   if (allImagesLoaded()) {
     ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
@@ -108,55 +108,6 @@ function drawEndScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "40px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  
   const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
   ctx.fillText(message, canvas.width / 2, canvas.height / 2);
-
-  if (allImagesLoaded()) {
-    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 80, 160, 160);
-  }
 }
-
-// ==== ОНОВЛЕННЯ ГРИ ====
-function gameLoop() {
-  if (screen === 1) {
-    drawWelcomeScreen();
-  } else if (screen === 2) {
-    drawGameScreen();
-  } else if (screen === 3) {
-    drawEndScreen();
-  }
-  requestAnimationFrame(gameLoop);
-}
-
-// ==== ОБРОБКА КЛІКІВ ====
-canvas.addEventListener("click", (e) => {
-  if (screen === 1) {
-    if ("vibrate" in navigator) navigator.vibrate(200);
-    screen = 2;
-    player.collectedHearts = 0;
-    hearts = [];
-    for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
-  } else if (screen === 2) {
-    hearts.forEach(heart => {
-      if (Math.abs(e.clientX - heart.x) < 80 && Math.abs(e.clientY - heart.y) < 80) {
-        if (!heart.isBroken) {
-          player.collectedHearts++;
-          if (player.collectedHearts >= requiredHearts) {
-            screen = 3;
-          }
-        }
-        heart.shrink = true;
-      }
-    });
-  } else if (screen === 3) {
-    screen = 1;
-  }
-});
-
-// ==== ЗАПУСК ====
-function initGame() {
-  resizeCanvas();
-  gameLoop();
-}
-window.addEventListener("load", initGame);
