@@ -158,3 +158,4 @@ function initGame() {
   gameLoop();
 }
 window.addEventListener("load", initGame);
+
