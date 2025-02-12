@@ -20,6 +20,7 @@ const romanticMessages = [
   "You are my dream come true ✨",
   "Love you to the moon and back 🌙💞"
 ];
+let finalMessage = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
 
 // ==== ФОНОВА АНІМАЦІЯ ====
 function drawBackground() {
@@ -34,17 +35,15 @@ const brokenHeartImage = new Image();
 brokenHeartImage.src = 'assets/heartbreak.png';
 const cupidImage = new Image();
 cupidImage.src = 'assets/cupid.png';
-const buttonImage = new Image();
-buttonImage.src = 'assets/button.png';
-const imagesLoaded = { heart: false, brokenHeart: false, cupid: false, button: false };
+
+const imagesLoaded = { heart: false, brokenHeart: false, cupid: false };
 
 heartImage.onload = () => imagesLoaded.heart = true;
 brokenHeartImage.onload = () => imagesLoaded.brokenHeart = true;
 cupidImage.onload = () => imagesLoaded.cupid = true;
-buttonImage.onload = () => imagesLoaded.button = true;
 
 function allImagesLoaded() {
-  return imagesLoaded.heart && imagesLoaded.brokenHeart && imagesLoaded.cupid && imagesLoaded.button;
+  return imagesLoaded.heart && imagesLoaded.brokenHeart && imagesLoaded.cupid;
 }
 
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
@@ -52,10 +51,10 @@ function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 120),
     y: Math.random() * (canvas.height - 200),
-    size: 80, // Зменшений розмір сердець
+    size: 80,
     isBroken: isBroken,
-    speedX: (Math.random() - 0.5) * 1.5, // М'який рух
-    speedY: (Math.random() - 0.5) * 1.5, // Літають у різні боки
+    speedX: (Math.random() - 0.5) * 1.5,
+    speedY: (Math.random() - 0.5) * 1.5,
     opacity: 1,
     shrink: false
   };
@@ -71,9 +70,6 @@ function drawWelcomeScreen() {
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
   ctx.fillText("LOVE IN THE AIR", canvas.width / 2, canvas.height / 2 - 50);
-  if (allImagesLoaded()) {
-    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
-  }
 }
 
 // ==== ГОЛОВНИЙ ІГРОВИЙ ЕКРАН ====
@@ -107,8 +103,7 @@ function drawEndScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "40px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
-  ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2);
 }
 
 // ==== ОБРОБКА КЛІКІВ ====
@@ -127,12 +122,13 @@ canvas.addEventListener("click", (e) => {
             screen = 3;
           }
         }
-        return false; // Видаляємо серце при кліку
+        return false;
       }
       return true;
     });
   } else if (screen === 3) {
     screen = 1;
+    finalMessage = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
   }
 });
 
@@ -148,3 +144,4 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 window.addEventListener("load", gameLoop);
+
