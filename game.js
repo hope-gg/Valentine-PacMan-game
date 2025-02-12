@@ -51,11 +51,11 @@ function allImagesLoaded() {
 function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 120),
-    y: Math.random() * (canvas.height - 200), // Тепер серця з'являються в різних місцях
-    size: 100, // Зменшений розмір сердець
+    y: Math.random() * (canvas.height - 200),
+    size: 80, // Зменшений розмір сердець
     isBroken: isBroken,
-    speedX: (Math.random() - 0.5) * 2, // Серця рухаються в боки
-    speedY: 1 + Math.random() * 1.5,
+    speedX: (Math.random() - 0.5) * 1.5, // М'який рух
+    speedY: (Math.random() - 0.5) * 1.5, // Літають у різні боки
     opacity: 1,
     shrink: false
   };
@@ -71,7 +71,6 @@ function drawWelcomeScreen() {
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
   ctx.fillText("LOVE IN THE AIR", canvas.width / 2, canvas.height / 2 - 50);
-
   if (allImagesLoaded()) {
     ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
   }
@@ -91,17 +90,12 @@ function drawGameScreen() {
     }
     ctx.globalAlpha = heart.opacity;
     if (allImagesLoaded()) {
-      if (heart.isBroken) {
-        ctx.drawImage(brokenHeartImage, heart.x, heart.y, heart.size, heart.size);
-      } else {
-        ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
-      }
+      ctx.drawImage(heart.isBroken ? brokenHeartImage : heartImage, heart.x, heart.y, heart.size, heart.size);
     }
     heart.x += heart.speedX;
     heart.y += heart.speedY;
-    if (heart.x < 0 || heart.x + heart.size > canvas.width) {
-      heart.speedX *= -1;
-    }
+    if (heart.x < 0 || heart.x + heart.size > canvas.width) heart.speedX *= -1;
+    if (heart.y < 0 || heart.y + heart.size > canvas.height) heart.speedY *= -1;
     ctx.globalAlpha = 1;
   });
   hearts = hearts.filter(heart => heart.opacity > 0);
@@ -125,7 +119,7 @@ canvas.addEventListener("click", (e) => {
     hearts = [];
     for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
   } else if (screen === 2) {
-    hearts.forEach(heart => {
+    hearts = hearts.filter(heart => {
       if (Math.abs(e.clientX - heart.x) < 50 && Math.abs(e.clientY - heart.y) < 50) {
         if (!heart.isBroken) {
           player.collectedHearts++;
@@ -133,8 +127,9 @@ canvas.addEventListener("click", (e) => {
             screen = 3;
           }
         }
-        heart.shrink = true;
+        return false; // Видаляємо серце при кліку
       }
+      return true;
     });
   } else if (screen === 3) {
     screen = 1;
