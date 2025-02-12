@@ -1,98 +1,127 @@
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const messageContainer = document.getElementById('message-container');
-const startButton = document.getElementById('startButton');
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-canvas.width = window.innerWidth * 0.8;
-canvas.height = window.innerHeight * 0.6;
+// ===== АДАПТАЦІЯ ДЛЯ СМАРТФОНІВ =====
+function resizeCanvas() {
+    canvas.width = window.innerWidth * 0.9;
+    canvas.height = window.innerHeight * 0.7;
+}
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
 
-let screen = 1;
+// ===== ГЛОБАЛЬНІ ЗМІННІ =====
+let gameActive = false;
 let player = { collectedHearts: 0 };
 let hearts = [];
 const requiredHearts = 5;
 const romanticMessages = [
-  "You are my forever love 💕",
-  "Every love story is beautiful, but ours is my favorite 💖",
-  "You hold my heart forever 💗",
-  "You are my dream come true ✨",
-  "Love you to the moon and back 🌙💞"
+    "You are my forever love 💕",
+    "Every love story is beautiful, but ours is my favorite 💖",
+    "You hold my heart forever 💗",
+    "You are my dream come true ✨",
+    "Love you to the moon and back 🌙💞"
 ];
 
-function drawBackground() {
-    ctx.fillStyle = "#FDF3E7";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
+// ===== ЗАВАНТАЖЕННЯ АССЕТІВ =====
+const heartImage = new Image();
+heartImage.src = "heart.png";
 
-function drawWelcomeScreen() {
-    drawBackground();
-    ctx.fillStyle = "#C14444";
-    ctx.font = "40px 'Playfair Display', serif";
-    ctx.textAlign = "center";
-    ctx.fillText("Love is in the air...", canvas.width / 2, canvas.height / 2 - 50);
-}
+const brokenHeartImage = new Image();
+brokenHeartImage.src = "broken-heart.png";
 
-function createHeart() {
+// ===== ФУНКЦІЯ СТВОРЕННЯ СЕРДЕЦЬ =====
+function createHeart(isBroken = false) {
     return {
         x: Math.random() * (canvas.width - 50),
         y: Math.random() * (canvas.height - 100),
-        size: 40,
+        size: 60,
+        isBroken: isBroken,
+        speed: 0.7 + Math.random() * 1.5, 
+        opacity: 1,
+        shrink: false
     };
 }
 
-function drawGameScreen() {
-    drawBackground();
-    ctx.fillStyle = "#C14444";
-    ctx.font = "30px 'Playfair Display', serif";
-    ctx.fillText(`Catch the hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 50);
-    hearts.forEach(heart => {
-        ctx.font = "50px Arial";
-        ctx.fillText("💗", heart.x, heart.y);
+// ===== МАЛЮВАННЯ СЕРДЕЦЬ =====
+function drawHearts() {
+    hearts.forEach((heart) => {
+        if (heart.shrink) {
+            heart.opacity -= 0.05;
+            heart.size -= 2;
+        }
+
+        ctx.globalAlpha = heart.opacity;
+        if (heart.isBroken) {
+            ctx.drawImage(brokenHeartImage, heart.x, heart.y, heart.size, heart.size);
+        } else {
+            ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
+        }
+        ctx.globalAlpha = 1;
     });
+
+    hearts = hearts.filter((heart) => heart.opacity > 0);
 }
 
-function drawEndScreen() {
-    drawBackground();
-    messageContainer.innerText = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
-    messageContainer.style.display = "block";
-    startButton.innerText = "Restart";
-    startButton.style.display = "block";
+// ===== МАЛЮВАННЯ ІГРОВОГО ЕКРАНУ =====
+function drawGameScreen() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#C14444";
+    ctx.font = "32px 'Playfair Display'";
+    ctx.textAlign = "center";
+    ctx.fillText(`Catch the hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 50);
+    drawHearts();
 }
 
+// ===== ФУНКЦІЯ СТАРТУ ГРИ =====
+function startGame() {
+    gameActive = true;
+    player.collectedHearts = 0;
+    hearts = [];
+
+    // Генеруємо серця
+    for (let i = 0; i < 15; i++) {
+        hearts.push(createHeart(Math.random() < 0.3));
+    }
+
+    gameLoop();
+}
+
+// ===== КЛІК ПО СЕРЦЮ =====
 canvas.addEventListener("click", (e) => {
-    if (screen === 1) {
-        screen = 2;
-        player.collectedHearts = 0;
-        hearts = Array.from({ length: 10 }, createHeart);
-        messageContainer.style.display = "none";
-    } else if (screen === 2) {
-        hearts.forEach((heart, index) => {
-            if (Math.abs(e.clientX - heart.x) < 40 && Math.abs(e.clientY - heart.y) < 40) {
+    if (!gameActive) return;
+
+    hearts.forEach((heart) => {
+        if (
+            e.clientX > heart.x &&
+            e.clientX < heart.x + heart.size &&
+            e.clientY > heart.y &&
+            e.clientY < heart.y + heart.size
+        ) {
+            if (!heart.isBroken) {
                 player.collectedHearts++;
-                hearts.splice(index, 1);
                 if (player.collectedHearts >= requiredHearts) {
-                    screen = 3;
+                    displayMessage();
                 }
             }
-        });
-    } else if (screen === 3) {
-        screen = 1;
-        startButton.innerText = "Start";
-    }
+            heart.shrink = true;
+
+            // Вібрація при кліку
+            if ("vibrate" in navigator) navigator.vibrate(100);
+        }
+    });
 });
 
+// ===== ФІНАЛЬНЕ ПОВІДОМЛЕННЯ =====
+function displayMessage() {
+    gameActive = false;
+    document.getElementById("message-container").innerText =
+        romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
+    document.getElementById("message-container").style.display = "block";
+}
+
+// ===== ІГРОВИЙ ЦИКЛ =====
 function gameLoop() {
-    if (screen === 1) drawWelcomeScreen();
-    else if (screen === 2) drawGameScreen();
-    else if (screen === 3) drawEndScreen();
+    if (!gameActive) return;
+    drawGameScreen();
     requestAnimationFrame(gameLoop);
 }
-
-function startGame() {
-    screen = 2;
-    player.collectedHearts = 0;
-    hearts = Array.from({ length: 10 }, createHeart);
-    messageContainer.style.display = "none";
-    startButton.style.display = "none";
-}
-
-window.onload = gameLoop;
