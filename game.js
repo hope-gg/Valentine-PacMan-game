@@ -52,9 +52,9 @@ function allImagesLoaded() {
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
 function createHeart(isBroken = false) {
     return {
-        x: Math.random() * (canvas.width - 120),
-        y: Math.random() * (canvas.height - 200),
-        size: 80,
+        x: Math.random() * (canvas.width - 140), // Більша розкиданість
+        y: Math.random() * (canvas.height - 220),
+        size: 100, // Збільшений розмір сердець для легшого кліку
         isBroken: isBroken,
         speedX: (Math.random() - 0.5) * 2.5,
         speedY: (Math.random() - 0.5) * 2.5,
@@ -112,6 +112,10 @@ function drawEndScreen() {
 
 // ==== ОБРОБКА КЛІКІВ ====
 canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
     if (screen === 1) {
         screen = 2;
         player.collectedHearts = 0;
@@ -119,7 +123,7 @@ canvas.addEventListener("click", (e) => {
         for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
     } else if (screen === 2) {
         hearts = hearts.filter(heart => {
-            if (Math.abs(e.clientX - heart.x) < 60 && Math.abs(e.clientY - heart.y) < 60) {
+            if (Math.abs(clickX - (heart.x + heart.size / 2)) < 50 && Math.abs(clickY - (heart.y + heart.size / 2)) < 50) {
                 if (!heart.isBroken) {
                     player.collectedHearts++;
                     if (player.collectedHearts >= requiredHearts) {
@@ -134,7 +138,6 @@ canvas.addEventListener("click", (e) => {
             return true;
         });
     } else if (screen === 3) {
-        // Тепер гра перезапускається без оновлення сторінки
         screen = 1;
         player.collectedHearts = 0;
         hearts = [];
