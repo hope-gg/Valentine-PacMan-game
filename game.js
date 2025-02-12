@@ -5,8 +5,8 @@ const ctx = canvas.getContext('2d');
 
 // Responsive canvas settings
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = document.documentElement.clientWidth;
+    canvas.height = document.documentElement.clientHeight;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -18,12 +18,15 @@ heartImage.src = 'assets/heart.png';
 const ghostImage = new Image();
 ghostImage.src = 'assets/ghost.png';
 
+ghostImage.onload = () => console.log('Ghost image loaded:', ghostImage.src);
+heartImage.onload = () => console.log('Heart image loaded:', heartImage.src);
+
 // Player setup
 const player = {
     x: canvas.width / 2 - 30,
     y: canvas.height - 120,
     size: 60,
-    speed: 30,  // Increased speed for smoother movement on mobile
+    speed: 40,  // Increased speed for smoother movement on mobile
     dx: 0,
     dy: 0
 };
@@ -67,6 +70,11 @@ window.addEventListener('touchend', (e) => {
         player.dy = Math.sign(diffY) * player.speed;
         player.dx = 0;
     }
+
+    setTimeout(() => {
+        player.dx = 0;
+        player.dy = 0;
+    }, 150); // Stop movement after swipe
 });
 
 // Functions to handle movement
