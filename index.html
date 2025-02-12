@@ -12,40 +12,35 @@
             justify-content: center;
             height: 100vh;
             background: #ffe6f2;
-            overflow: hidden;
             flex-direction: column;
         }
         canvas {
+            border: 4px solid #C14444;
             background: white;
-            border: 2px solid #ff4d88;
             display: block;
-            max-width: 100%;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
         }
-        button {
-            margin-top: 20px;
-            padding: 15px 30px;
-            font-size: 20px;
-            border: none;
-            background: #ff4d88;
+        .button {
+            background: #C14444;
             color: white;
+            font-size: 24px;
+            padding: 15px 30px;
+            border: none;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
         }
-        button:hover {
-            background: #e6005c;
+        .button:hover {
+            background: #9E2A2A;
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <button id="startButton">Start Game</button>
-
-    <script>
-        document.getElementById("startButton").addEventListener("click", () => {
-            document.getElementById("startButton").style.display = "none";
-            startGame();
-        });
-    </script>
+    <button class="button" id="startButton">Start Game</button>
 
     <script src="game.js"></script>
 </body>
