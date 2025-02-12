@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Valentine's Love Catch 💌</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Dancing+Script:wght@600&family=Cinzel:wght@600&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom, #FFD3E3, #FFB6C1);
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(to bottom, #FFEBE9, #FFCDD2);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -19,49 +19,56 @@
             text-align: center;
         }
         #gameCanvas {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 250, 240, 0.9);
             border-radius: 20px;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
             max-width: 100%;
         }
         h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 36px;
-            color: #D72638;
+            font-family: 'Cinzel', serif;
+            font-size: 48px;
+            font-weight: bold;
+            color: #A21838;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
         }
         .button {
-            background: #D72638;
+            background: #A21838;
             color: white;
-            font-size: 20px;
-            padding: 15px 30px;
+            font-size: 22px;
+            padding: 16px 35px;
             border: none;
             cursor: pointer;
             border-radius: 50px;
             margin-top: 20px;
             font-weight: 600;
+            font-family: 'Dancing Script', cursive;
             box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, background 0.3s ease;
         }
         .button:hover {
-            background: #C21830;
+            background: #82162A;
             transform: scale(1.05);
         }
         #message-container {
-            font-size: 24px;
-            color: #D72638;
+            font-size: 28px;
+            font-family: 'Dancing Script', cursive;
+            color: #A21838;
             font-weight: bold;
             margin-top: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            background: rgba(255, 250, 240, 0.95);
             border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            width: 80%;
+            max-width: 500px;
         }
     </style>
 </head>
 <body>
-    <h1>Catch the Hearts! 💕</h1>
+    <h1>Catch the Love 💘</h1>
     <canvas id="gameCanvas"></canvas>
-    <button class="button" id="startButton">Start</button>
+    <button class="button" id="startButton">Start the Romance</button>
     <div id="message-container" style="display: none;"></div>
     <script src="game.js"></script>
 </body>
