@@ -19,17 +19,21 @@
             text-align: center;
         }
         #gameContainer {
-            width: 100%;
-            max-width: 450px;
-            height: 90vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 100vw;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 800px;
+            padding: 10px;
+            box-sizing: border-box;
         }
         #gameCanvas {
             width: 100%;
-            height: 100%;
+            height: auto;
+            aspect-ratio: 9 / 16; /* Фіксоване співвідношення сторін */
             max-width: 400px;
             max-height: 90vh;
             background: rgba(255, 255, 255, 0.7);
@@ -77,6 +81,17 @@
         <canvas id="gameCanvas"></canvas>
         <div id="message-container" style="display: none;"></div>
     </div>
+    <script>
+        function resizeCanvas() {
+            const canvas = document.getElementById('gameCanvas');
+            const container = document.getElementById('gameContainer');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight * 0.9;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('load', resizeCanvas);
+    </script>
     <script src="game.js"></script>
 </body>
 </html>
+
