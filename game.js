@@ -65,6 +65,7 @@ function moveTowardsTarget() {
         player.x = player.target.x;
         player.y = player.target.y;
         player.target = null;
+        collectHeart();
     }
 }
 
@@ -98,23 +99,14 @@ function displayEndMessage() {
     ctx.fillText('Happy Valentine\'s Day!', canvas.width / 2, canvas.height / 2);
 }
 
-// Function to update and draw hearts
-function updateHearts() {
-    hearts.forEach((heart, index) => {
-        // Check for collision with player
-        if (
-            player.x < heart.x + heart.size &&
-            player.x + player.size > heart.x &&
-            player.y < heart.y + heart.size &&
-            player.y + player.size > heart.y
-        ) {
-            hearts.splice(index, 1); // Remove heart
-            score += 1; // Increase score
-            addHeart(); // Add a new heart
-        }
-    });
+// Function to handle collecting hearts
+function collectHeart() {
+    hearts = hearts.filter(heart => !(player.x === heart.x && player.y === heart.y));
+    score += 1;
+    addHeart();
 }
 
+// Function to draw hearts
 function drawHearts() {
     hearts.forEach(heart => {
         ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
@@ -156,7 +148,6 @@ function gameLoop() {
 
     moveTowardsTarget();
     drawPlayer();
-    updateHearts();
     drawHearts();
     drawFinishPoint();
     checkFinish();
