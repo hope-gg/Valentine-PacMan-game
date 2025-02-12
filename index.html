@@ -2,95 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine's Love Catch</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Valentine Pacman Game</title>
     <style>
-        body {
-            margin: 0;
-            font-family: 'Dancing Script', cursive;
-            background: linear-gradient(to bottom, #FFEBE9, #FFCDD2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            text-align: center;
-        }
-        #gameCanvas {
-            background: rgba(255, 250, 240, 0.9);
-            border-radius: 20px;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15);
-            max-width: 90%;
-        }
-        h1 {
-            font-family: 'Dancing Script', cursive;
-            font-size: 48px;
-            color: #A21838;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        .button {
-            background: #A21838;
-            color: white;
-            font-size: 24px;
-            padding: 16px 35px;
-            border: none;
-            cursor: pointer;
-            border-radius: 50px;
-            margin-top: 20px;
-            font-family: 'Luckiest Guy', cursive;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease, background 0.3s ease;
-        }
-        .button:hover {
-            background: #82162A;
-            transform: scale(1.05);
-        }
-        #message-container {
-            font-size: 28px;
-            font-family: 'Dancing Script', cursive;
-            color: #A21838;
-            font-weight: bold;
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 250, 240, 0.95);
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
-            width: 80%;
-            max-width: 500px;
-        }
-        /* Floating Hearts Animation */
-        .heart {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: url('heart.png') no-repeat center center;
-            background-size: contain;
-            animation: float 5s infinite;
-        }
-        @keyframes float {
-            0% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-20px);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #ffe6e6;
+            border: 2px solid #ff6666;
         }
     </style>
 </head>
 <body>
-    <h1>Catch the Hearts!</h1>
     <canvas id="gameCanvas"></canvas>
-    <button class="button" id="startButton">Start the Romance</button>
-    <div id="message-container" style="display: none;"></div>
     <script src="game.js"></script>
 </body>
 </html>
+
 
