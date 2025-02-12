@@ -4,46 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentine's Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            font-family: 'Dancing Script', cursive;
-            background: linear-gradient(to bottom, #ffd1dc, #ff8fab);
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom, #FFD3E3, #FFB6C1);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
             overflow: hidden;
-            flex-direction: column;
             text-align: center;
         }
-        canvas {
-            background: rgba(255, 255, 255, 0.6);
+        #gameCanvas {
+            background: rgba(255, 255, 255, 0.7);
             border-radius: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+        }
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            color: #D72638;
         }
         .button {
-            background: #ff4d6d;
+            background: #D72638;
             color: white;
-            font-size: 22px;
+            font-size: 20px;
             padding: 15px 30px;
             border: none;
-            border-radius: 10px;
             cursor: pointer;
-            margin-top: 15px;
-            font-family: 'Dancing Script', cursive;
-            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 50px;
+            margin-top: 20px;
+            font-weight: 600;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, background 0.3s ease;
         }
         .button:hover {
-            background: #e63950;
+            background: #C21830;
+            transform: scale(1.05);
+        }
+        #message-container {
+            font-size: 24px;
+            color: #D72638;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
 <body>
-    <h1 style="color: #ff4d6d; font-size: 40px;">Love is in the air... 💖</h1>
+    <h1>Catch the Hearts! 💕</h1>
     <canvas id="gameCanvas"></canvas>
-    <button class="button" id="startButton">Start the Game</button>
+    <button class="button" id="startButton">Start</button>
+    <div id="message-container" style="display: none;"></div>
     <script src="game.js"></script>
 </body>
 </html>
