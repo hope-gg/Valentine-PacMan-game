@@ -119,19 +119,57 @@ function checkFinish() {
 }
 
 // ====== 9. Відображення фінального повідомлення ======
+// Додаємо масив фраз
+const endPhrases = [
+  "You are the song that my heart loves to sing.",
+  "All that you are is all that I’ll ever need.",
+  "Take my hand, take my whole life too, but I can't help falling in love with you",
+  "I love you, not just because of who you are, but for who I have become when I am with you.",
+  "Life is better when I have you by my side.",
+  "It’s been a journey … one I’d do all over again.",
+  "You're my Wonder Woman/Superman.",
+  "Every scar. Every flaw. Every imperfection. I love you.",
+  "Every love song is about you. Happy Valentine's Day!",
+  "I love that we've never lost the magic that makes us us.",
+  "You're in all of my best memories.",
+  "You give my heart peace. I love you so much.",
+  "You’re my happily ever after.",
+  "At the heart of it all, we’re friends. I love that, and I love you.",
+  "Happy Valentine’s Day! My favorite place in the world is next to you.",
+  "You may hold my hand for a while, but you hold my heart forever.",
+  "Thank you for being mine.",
+  "The best things in life are better with you.",
+  "I never believed in luck until I found you.",
+  "Whenever I'm with you, wherever we are, I'm home.",
+  "Every love story is beautiful but ours is my favorite.",
+  "You’re the one. I’ve never been so sure of anything in my whole life.",
+  "I fell in love with you because of all the small things you don’t even realize you’re doing.",
+  "Thank you for making me laugh and smile every single day since the day we met.",
+  "Like you and me, some things are just meant to be."
+];
+
+// ...
+
 function displayEndMessage() {
+    // Стилі тексту
     ctx.fillStyle = 'red';
     ctx.font = '40px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Зверніть увагу на devicePixelRatio
+    // Координати центру з урахуванням devicePixelRatio
     const ratio = window.devicePixelRatio || 1;
     const centerX = (canvas.width / ratio) / 2;
     const centerY = (canvas.height / ratio) / 2;
 
-    ctx.fillText('Happy Valentine\'s Day!', centerX, centerY);
+    // Обираємо випадкову фразу
+    const randomIndex = Math.floor(Math.random() * endPhrases.length);
+    const randomPhrase = endPhrases[randomIndex];
+
+    // Виводимо фразу в центр екрану
+    ctx.fillText(randomPhrase, centerX, centerY);
 }
+
 
 // ====== 10. Оновлення та малювання сердечок ======
 function updateHearts() {
