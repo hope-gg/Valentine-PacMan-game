@@ -1,174 +1,180 @@
-// Basic setup for a simple Valentine-themed Pacman-style game
+"""Pacman, classic arcade game.
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+Exercises
 
-// Responsive canvas settings
-const canvasWidth = window.innerWidth;
-const canvasHeight = window.innerHeight;
-canvas.width = canvasWidth;
-canvas.height = canvasHeight;
+1. Change the board.
+2. Change the number of ghosts.
+3. Change where pacman starts.
+4. Make the ghosts faster/slower.
+5. Make the ghosts smarter.
+"""
 
-// Assets
-const heartImage = new Image();
-heartImage.src = 'assets/heart.png';
+from random import choice
+from turtle import *
 
-const ghostImage = new Image();
-ghostImage.src = 'assets/ghost.png';
+from freegames import floor, vector
 
-// Player setup
-const player = {
-    x: canvasWidth / 2 - 30,
-    y: canvasHeight - 120,
-    size: 60,
-    speed: 8,
-    dx: 0,
-    dy: 0
-};
+state = {'score': 0}
+path = Turtle(visible=False)
+writer = Turtle(visible=False)
+aim = vector(5, 0)
+pacman = vector(-40, -80)
+ghosts = [
+    [vector(-180, 160), vector(5, 0)],
+    [vector(-180, -160), vector(0, 5)],
+    [vector(100, 160), vector(0, -5)],
+    [vector(100, -160), vector(-5, 0)],
+]
+# fmt: off
+tiles = [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
+    0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+]
+# fmt: on
 
-// Hearts array
-let hearts = [];
-let score = 0;
 
-// Finish point
-const finishPoint = {
-    x: canvasWidth / 2 - 50,
-    y: 20,
-    size: 100
-};
+def square(x, y):
+    """Draw square using path at (x, y)."""
+    path.up()
+    path.goto(x, y)
+    path.down()
+    path.begin_fill()
 
-let gameFinished = false;
+    for count in range(4):
+        path.forward(20)
+        path.left(90)
 
-// Input handling
-let keys = {};
-window.addEventListener('keydown', (e) => keys[e.key] = true);
-window.addEventListener('keyup', (e) => keys[e.key] = false);
+    path.end_fill()
 
-// Functions to handle movement
-function movePlayer() {
-    if (keys['ArrowLeft'] || keys['a']) player.dx = -player.speed;
-    else if (keys['ArrowRight'] || keys['d']) player.dx = player.speed;
-    else player.dx = 0;
 
-    if (keys['ArrowUp'] || keys['w']) player.dy = -player.speed;
-    else if (keys['ArrowDown'] || keys['s']) player.dy = player.speed;
-    else player.dy = 0;
+def offset(point):
+    """Return offset of point in tiles."""
+    x = (floor(point.x, 20) + 200) / 20
+    y = (180 - floor(point.y, 20)) / 20
+    index = int(x + y * 20)
+    return index
 
-    player.x += player.dx;
-    player.y += player.dy;
 
-    // Prevent player from moving off-screen
-    player.x = Math.max(0, Math.min(canvasWidth - player.size, player.x));
-    player.y = Math.max(0, Math.min(canvasHeight - player.size, player.y));
-}
+def valid(point):
+    """Return True if point is valid in tiles."""
+    index = offset(point)
 
-// Function to draw player
-function drawPlayer() {
-    ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
-}
+    if tiles[index] == 0:
+        return False
 
-// Function to draw finish point
-function drawFinishPoint() {
-    ctx.fillStyle = 'lightblue';
-    ctx.fillRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
-    ctx.strokeStyle = 'darkblue';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
-    ctx.fillStyle = 'black';
-    ctx.font = '18px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Reach Here!', finishPoint.x + finishPoint.size / 2, finishPoint.y + 55);
-}
+    index = offset(point + 19)
 
-// Function to check if player reached the finish point
-function checkFinish() {
-    if (
-        player.x < finishPoint.x + finishPoint.size &&
-        player.x + player.size > finishPoint.x &&
-        player.y < finishPoint.y + finishPoint.size &&
-        player.y + player.size > finishPoint.y
-    ) {
-        gameFinished = true;
-    }
-}
+    if tiles[index] == 0:
+        return False
 
-// Function to display end message
-function displayEndMessage() {
-    ctx.fillStyle = 'red';
-    ctx.font = '40px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Happy Valentine\'s Day!', canvasWidth / 2, canvasHeight / 2);
-}
+    return point.x % 20 == 0 or point.y % 20 == 0
 
-// Function to update and draw hearts
-function updateHearts() {
-    hearts.forEach((heart, index) => {
-        heart.y += 3; // Move hearts down faster
-        if (heart.y > canvasHeight) {
-            heart.y = -heart.size; // Reset position to top
-            heart.x = Math.random() * (canvasWidth - heart.size);
-        }
 
-        // Check for collision with player
-        if (
-            player.x < heart.x + heart.size &&
-            player.x + player.size > heart.x &&
-            player.y < heart.y + heart.size &&
-            player.y + player.size > heart.y
-        ) {
-            hearts.splice(index, 1); // Remove heart
-            score += 1; // Increase score
-            addHeart(); // Add a new heart
-        }
-    });
-}
+def world():
+    """Draw world using path."""
+    bgcolor('black')
+    path.color('blue')
 
-function drawHearts() {
-    hearts.forEach(heart => {
-        ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
-    });
-}
+    for index in range(len(tiles)):
+        tile = tiles[index]
 
-// Function to add a new heart
-function addHeart() {
-    hearts.push({
-        x: Math.random() * (canvasWidth - 40),
-        y: Math.random() * (canvasHeight / 2),
-        size: 40
-    });
-}
+        if tile > 0:
+            x = (index % 20) * 20 - 200
+            y = 180 - (index // 20) * 20
+            square(x, y)
 
-// Game loop
-function gameLoop() {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            if tile == 1:
+                path.up()
+                path.goto(x + 10, y + 10)
+                path.dot(2, 'white')
 
-    if (gameFinished) {
-        displayEndMessage();
-        return;
-    }
 
-    movePlayer();
-    drawPlayer();
-    updateHearts();
-    drawHearts();
-    drawFinishPoint();
-    checkFinish();
+def move():
+    """Move pacman and all ghosts."""
+    writer.undo()
+    writer.write(state['score'])
 
-    // Display score
-    ctx.fillStyle = 'black';
-    ctx.font = '20px Arial';
-    ctx.fillText(`Score: ${score}`, 20, 40);
+    clear()
 
-    requestAnimationFrame(gameLoop);
-}
+    if valid(pacman + aim):
+        pacman.move(aim)
 
-// Initialize game
-function initGame() {
-    for (let i = 0; i < 5; i++) {
-        addHeart();
-    }
-    gameLoop();
-}
+    index = offset(pacman)
 
-// Start the game
-initGame();
+    if tiles[index] == 1:
+        tiles[index] = 2
+        state['score'] += 1
+        x = (index % 20) * 20 - 200
+        y = 180 - (index // 20) * 20
+        square(x, y)
+
+    up()
+    goto(pacman.x + 10, pacman.y + 10)
+    dot(20, 'yellow')
+
+    for point, course in ghosts:
+        if valid(point + course):
+            point.move(course)
+        else:
+            options = [
+                vector(5, 0),
+                vector(-5, 0),
+                vector(0, 5),
+                vector(0, -5),
+            ]
+            plan = choice(options)
+            course.x = plan.x
+            course.y = plan.y
+
+        up()
+        goto(point.x + 10, point.y + 10)
+        dot(20, 'red')
+
+    update()
+
+    for point, course in ghosts:
+        if abs(pacman - point) < 20:
+            return
+
+    ontimer(move, 100)
+
+
+def change(x, y):
+    """Change pacman aim if valid."""
+    if valid(pacman + vector(x, y)):
+        aim.x = x
+        aim.y = y
+
+
+setup(420, 420, 370, 0)
+hideturtle()
+tracer(False)
+writer.goto(160, 160)
+writer.color('white')
+writer.write(state['score'])
+listen()
+onkey(lambda: change(5, 0), 'Right')
+onkey(lambda: change(-5, 0), 'Left')
+onkey(lambda: change(0, 5), 'Up')
+onkey(lambda: change(0, -5), 'Down')
+world()
+move()
+done()
