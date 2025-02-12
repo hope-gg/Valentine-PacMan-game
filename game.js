@@ -23,7 +23,7 @@ const player = {
     x: canvas.width / 2 - 30,
     y: canvas.height - 120,
     size: 60,
-    speed: 25,  // Increased speed for smoother movement on mobile
+    speed: 30,  // Increased speed for smoother movement on mobile
     dx: 0,
     dy: 0
 };
@@ -46,25 +46,27 @@ let keys = {};
 window.addEventListener('keydown', (e) => keys[e.key] = true);
 window.addEventListener('keyup', (e) => keys[e.key] = false);
 
-// Touch controls
+// Touch controls for mobile
 let touchStartX = 0, touchStartY = 0;
 window.addEventListener('touchstart', (e) => {
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
 });
 
-window.addEventListener('touchmove', (e) => {
-    let touchX = e.touches[0].clientX;
-    let touchY = e.touches[0].clientY;
+window.addEventListener('touchend', (e) => {
+    let touchEndX = e.changedTouches[0].clientX;
+    let touchEndY = e.changedTouches[0].clientY;
 
-    let diffX = touchX - touchStartX;
-    let diffY = touchY - touchStartY;
+    let diffX = touchEndX - touchStartX;
+    let diffY = touchEndY - touchStartY;
 
-    player.dx = Math.sign(diffX) * player.speed;
-    player.dy = Math.sign(diffY) * player.speed;
-
-    touchStartX = touchX;
-    touchStartY = touchY;
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+        player.dx = Math.sign(diffX) * player.speed;
+        player.dy = 0;
+    } else {
+        player.dy = Math.sign(diffY) * player.speed;
+        player.dx = 0;
+    }
 });
 
 // Functions to handle movement
