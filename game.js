@@ -51,10 +51,11 @@ function allImagesLoaded() {
 function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 120),
-    y: -100,
-    size: 120,
+    y: Math.random() * (canvas.height - 200), // Тепер серця з'являються в різних місцях
+    size: 100, // Зменшений розмір сердець
     isBroken: isBroken,
-    speed: 1.5 + Math.random() * 1.5,
+    speedX: (Math.random() - 0.5) * 2, // Серця рухаються в боки
+    speedY: 1 + Math.random() * 1.5,
     opacity: 1,
     shrink: false
   };
@@ -96,7 +97,11 @@ function drawGameScreen() {
         ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
       }
     }
-    heart.y += heart.speed;
+    heart.x += heart.speedX;
+    heart.y += heart.speedY;
+    if (heart.x < 0 || heart.x + heart.size > canvas.width) {
+      heart.speedX *= -1;
+    }
     ctx.globalAlpha = 1;
   });
   hearts = hearts.filter(heart => heart.opacity > 0);
@@ -121,7 +126,7 @@ canvas.addEventListener("click", (e) => {
     for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
   } else if (screen === 2) {
     hearts.forEach(heart => {
-      if (Math.abs(e.clientX - heart.x) < 60 && Math.abs(e.clientY - heart.y) < 60) {
+      if (Math.abs(e.clientX - heart.x) < 50 && Math.abs(e.clientY - heart.y) < 50) {
         if (!heart.isBroken) {
           player.collectedHearts++;
           if (player.collectedHearts >= requiredHearts) {
