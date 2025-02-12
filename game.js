@@ -30,16 +30,12 @@ function drawBackground() {
 // ==== ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ ====
 const heartImage = new Image();
 heartImage.src = 'assets/heart.png';
-
 const brokenHeartImage = new Image();
 brokenHeartImage.src = 'assets/heartbreak.png';
-
 const cupidImage = new Image();
 cupidImage.src = 'assets/cupid.png';
-
 const buttonImage = new Image();
 buttonImage.src = 'assets/button.png';
-
 const imagesLoaded = { heart: false, brokenHeart: false, cupid: false, button: false };
 
 heartImage.onload = () => imagesLoaded.heart = true;
@@ -54,11 +50,11 @@ function allImagesLoaded() {
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
 function createHeart(isBroken = false) {
   return {
-    x: Math.random() * (canvas.width - 200),
-    y: -120,
-    size: 160,
+    x: Math.random() * (canvas.width - 120),
+    y: -100,
+    size: 120,
     isBroken: isBroken,
-    speed: 2 + Math.random() * 2,
+    speed: 1.5 + Math.random() * 1.5,
     opacity: 1,
     shrink: false
   };
@@ -122,10 +118,10 @@ canvas.addEventListener("click", (e) => {
     screen = 2;
     player.collectedHearts = 0;
     hearts = [];
-    for (let i = 0; i < 8; i++) hearts.push(createHeart(Math.random() < 0.3));
+    for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
   } else if (screen === 2) {
     hearts.forEach(heart => {
-      if (Math.abs(e.clientX - heart.x) < 80 && Math.abs(e.clientY - heart.y) < 80) {
+      if (Math.abs(e.clientX - heart.x) < 60 && Math.abs(e.clientY - heart.y) < 60) {
         if (!heart.isBroken) {
           player.collectedHearts++;
           if (player.collectedHearts >= requiredHearts) {
