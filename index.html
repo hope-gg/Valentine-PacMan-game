@@ -2,34 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- ВАЖЛИВО для мобільних пристроїв -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Valentine Game</title>
-
+  <title>Romantic Canvas Game</title>
+  <!-- Підключаємо шрифт Google Fonts (наприклад, "Dancing Script") -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" 
+    rel="stylesheet"
+  >
   <style>
-    /* Скидаємо відступи у html, body */
     html, body {
-      margin: 0;
+      margin: 0; 
       padding: 0;
       width: 100%;
       height: 100%;
+      overflow: hidden; /* Щоб не було скролу */
+    }
+    /* Романтичний градієнт як фон сторінки */
+    body {
+      background: linear-gradient(160deg, #ffd6e0 0%, #fce2ce 100%);
+      font-family: 'Dancing Script', cursive;
     }
     /* Canvas на весь екран */
     #gameCanvas {
       display: block;
       width: 100vw;
       height: 100vh;
-      border: 2px solid red;  /* лишаємо для перевірки, потім можете прибрати */
       box-sizing: border-box;
+      /* Тонка рамка для прикладу */
+      border: 2px solid #ff88aa;
     }
   </style>
 </head>
-
 <body>
-  <!-- Наш Canvas -->
   <canvas id="gameCanvas"></canvas>
 
-  <!-- Підключаємо скрипт гри -->
   <script src="game.js"></script>
 </body>
 </html>
