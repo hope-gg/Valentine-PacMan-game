@@ -3,15 +3,28 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Responsive canvas settings
+// Responsive canvas with devicePixelRatio
 function resizeCanvas() {
-    canvas.width = document.documentElement.clientWidth;
-    canvas.height = document.documentElement.clientHeight;
+    const ratio = window.devicePixelRatio || 1;
+    const width = document.documentElement.clientWidth;
+    const height = document.documentElement.clientHeight;
+
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+
+    canvas.style.width = width + 'px';
+    canvas.style.height = height + 'px';
+
+    // Скидаємо трансформацію і масштабуємо
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(ratio, ratio);
 }
+
+// Викликаємо один раз і при зміні розміру (або орієнтації) екрану
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
-// Assets
+// ====== Assets ======
 const heartImage = new Image();
 heartImage.src = 'assets/heart.png';
 
@@ -21,12 +34,12 @@ ghostImage.src = 'assets/ghost.png';
 ghostImage.onload = () => console.log('Ghost image loaded:', ghostImage.src);
 heartImage.onload = () => console.log('Heart image loaded:', heartImage.src);
 
-// Player setup
+// ====== Player setup ======
 const player = {
-    x: canvas.width / 2 - 50,
-    y: canvas.height - 150,
+    x: 0, // Тимчасово, уточнимо пізніше
+    y: 0,
     size: 100, // Increased size for better touch detection
-    speed: 5,  // Adjusted for smoother movement
+    speed: 5,
     dx: 0,
     dy: 0,
     target: null
@@ -38,14 +51,14 @@ let score = 0;
 
 // Finish point
 const finishPoint = {
-    x: canvas.width / 2 - 50,
+    x: 0, // Уточнимо пізніше
     y: 50,
     size: 100
 };
 
 let gameFinished = false;
 
-// Function to move ghost towards a target
+// === Move ghost towards a target ===
 function moveTowardsTarget() {
     if (!player.target) return;
 
@@ -64,25 +77,27 @@ function moveTowardsTarget() {
     }
 }
 
-// Function to draw player
+// === Draw player ===
 function drawPlayer() {
     ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
 }
 
-// Function to draw finish point
+// === Draw finish point ===
 function drawFinishPoint() {
     ctx.fillStyle = 'lightblue';
     ctx.fillRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
     ctx.strokeStyle = 'darkblue';
     ctx.lineWidth = 3;
     ctx.strokeRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
+
     ctx.fillStyle = 'black';
     ctx.font = '18px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Reach Here!', finishPoint.x + finishPoint.size / 2, finishPoint.y + 55);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Reach Here!', finishPoint.x + finishPoint.size / 2, finishPoint.y + finishPoint.size / 2);
 }
 
-// Function to check if player reached the finish point
+// === Check if player reached the finish point ===
 function checkFinish() {
     if (
         player.x < finishPoint.x + finishPoint.size &&
@@ -94,14 +109,16 @@ function checkFinish() {
     }
 }
 
-// Function to display end message
+// === Display end message ===
 function displayEndMessage() {
     ctx.fillStyle = 'red';
     ctx.font = '40px Arial';
     ctx.textAlign = 'center';
-ctx.fillText("Take my hand, take my whole life too, but I can't help falling in love with you!", canvas.width / 2, canvas.height / 2);}
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Happy Valentine\'s Day!', canvas.width / 2, canvas.height / 2);
+}
 
-// Function to update and draw hearts
+// === Update and draw hearts ===
 function updateHearts() {
     hearts.forEach((heart, index) => {
         // Check for collision with player
@@ -112,8 +129,8 @@ function updateHearts() {
             player.y + player.size > heart.y
         ) {
             hearts.splice(index, 1); // Remove heart
-            score += 1; // Increase score
-            addHeart(); // Add a new heart
+            score += 1;             // Increase score
+            addHeart();             // Add a new heart
         }
     });
 }
@@ -124,20 +141,20 @@ function drawHearts() {
     });
 }
 
-// Function to add a new heart
+// === Add a new heart ===
 function addHeart() {
     hearts.push({
-        x: Math.random() * (canvas.width - 50),
-        y: Math.random() * (canvas.height / 2),
-        size: 60 // Slightly larger hearts for better visibility on mobile
+        x: Math.random() * (canvas.width / (window.devicePixelRatio || 1) - 50),
+        y: Math.random() * (canvas.height / (window.devicePixelRatio || 1) / 2),
+        size: 60
     });
 }
 
-// Click event to move towards the clicked heart
+// === Click event (for desktop); for mobile краще pointer events ===
 canvas.addEventListener('click', (e) => {
-    let clickX = e.clientX;
-    let clickY = e.clientY;
-    
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+
     hearts.forEach((heart) => {
         if (
             clickX > heart.x && clickX < heart.x + heart.size &&
@@ -148,7 +165,7 @@ canvas.addEventListener('click', (e) => {
     });
 });
 
-// Game loop
+// === Game loop ===
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -167,16 +184,27 @@ function gameLoop() {
     // Display score
     ctx.fillStyle = 'black';
     ctx.font = '24px Arial';
+    ctx.textAlign = 'left';
     ctx.fillText(`Score: ${score}`, 20, 40);
 
     requestAnimationFrame(gameLoop);
 }
 
-// Initialize game
+// === Initialize game ===
 function initGame() {
-    for (let i = 0; i < 7; i++) { // Increased initial number of hearts
+    // Розташовуємо гравця по центру ширини, але ближче до низу
+    player.x = (canvas.width / (window.devicePixelRatio || 1)) / 2 - player.size / 2;
+    player.y = (canvas.height / (window.devicePixelRatio || 1)) - player.size - 50;
+
+    // Розташовуємо фініш по центру ширини, зверху
+    finishPoint.x = (canvas.width / (window.devicePixelRatio || 1)) / 2 - finishPoint.size / 2;
+    finishPoint.y = 50;
+
+    // Створюємо кілька початкових сердець
+    for (let i = 0; i < 7; i++) {
         addHeart();
     }
+
     gameLoop();
 }
 
