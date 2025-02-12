@@ -21,36 +21,30 @@ const player = {
   collectedHearts: 0
 };
 
-// ====== 3. "Друга половинка" (фініш) ======
-const soulmate = {
-  x: canvas.width / 2 - 50,
-  y: canvas.height / 2 - 50,
-  size: 120,
-  active: false
-};
-
-// ====== 4. Сердечка ======
+// ====== 3. Сердечка (правильні та розбиті) ======
 let hearts = [];
+const requiredHearts = 5;
 
-function createHeart() {
+function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 80) + 40,
     y: Math.random() * (canvas.height - 200) + 100,
-    size: 50
+    size: 50,
+    isBroken: isBroken // Розбите чи повне сердечко
   };
 }
 
-// ====== 5. Завантаження персонажів ======
+// ====== 4. Завантаження графіки ======
 const playerImage = new Image();
-playerImage.src = 'assets/ghost.png'; // Гравець-привид
+playerImage.src = 'assets/ghost.png';
 
-const soulmateImage = new Image();
-soulmateImage.src = 'assets/soulmate.png'; // Друга половинка
+const fullHeartImage = new Image();
+fullHeartImage.src = 'assets/full_heart.png'; // Повне рожеве серце
 
-const heartImage = new Image();
-heartImage.src = 'assets/heart.png';
+const brokenHeartImage = new Image();
+brokenHeartImage.src = 'assets/broken_heart.png'; // Розбите серце
 
-// ====== 6. Малювання фону ======
+// ====== 5. Малювання фону ======
 function drawBackground() {
   const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
   gradient.addColorStop(0, '#ffccee');
@@ -59,19 +53,12 @@ function drawBackground() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// ====== 7. Малювання персонажа ======
+// ====== 6. Малювання персонажа ======
 function drawPlayer() {
   ctx.drawImage(playerImage, player.x, player.y, player.size, player.size);
 }
 
-// ====== 8. Малювання другої половинки ======
-function drawSoulmate() {
-  ctx.globalAlpha = soulmate.active ? 1 : 0.5; // Робимо її трохи прозорою, якщо гравець ще не зібрав сердечка
-  ctx.drawImage(soulmateImage, soulmate.x, soulmate.y, soulmate.size, soulmate.size);
-  ctx.globalAlpha = 1;
-}
-
-// ====== 9. Оновлення сердечок ======
+// ====== 7. Оновлення та малювання сердечок ======
 function updateHearts() {
   hearts = hearts.filter(heart => {
     if (
@@ -80,9 +67,11 @@ function updateHearts() {
       player.y < heart.y + heart.size &&
       player.y + player.size > heart.y
     ) {
-      player.collectedHearts++;
-      if (player.collectedHearts >= 5) {
-        soulmate.active = true; // Активуємо фініш
+      if (!heart.isBroken) {
+        player.collectedHearts++;
+        if (player.collectedHearts >= requiredHearts) {
+          gameFinished = true;
+        }
       }
       return false;
     }
@@ -90,14 +79,14 @@ function updateHearts() {
   });
 }
 
-// ====== 10. Малювання сердечок ======
 function drawHearts() {
   hearts.forEach(heart => {
-    ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
+    const img = heart.isBroken ? brokenHeartImage : fullHeartImage;
+    ctx.drawImage(img, heart.x, heart.y, heart.size, heart.size);
   });
 }
 
-// ====== 11. Рух гравця ======
+// ====== 8. Рух гравця ======
 function moveTowardsTarget() {
   if (!player.target) return;
   let dx = player.target.x - player.x;
@@ -112,40 +101,32 @@ function moveTowardsTarget() {
     player.y = player.target.y;
     player.target = null;
   }
-
-  // Якщо гравець зустрічає свою другу половинку
-  if (soulmate.active) {
-    let dxSoulmate = (soulmate.x + soulmate.size / 2) - player.x;
-    let dySoulmate = (soulmate.y + soulmate.size / 2) - player.y;
-    let distSoulmate = Math.sqrt(dxSoulmate * dxSoulmate + dySoulmate * dySoulmate);
-
-    if (distSoulmate < 40) {
-      gameFinished = true;
-    }
-  }
 }
 
-// ====== 12. Обробка кліку ======
+// ====== 9. Обробка кліку ======
 canvas.addEventListener('click', (e) => {
   player.target = { x: e.clientX, y: e.clientY };
 });
 
-// ====== 13. Фінальний текст ======
+// ====== 10. Фінальне вікно з текстом ======
 function displayEndMessage() {
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  ctx.fillRect(canvas.width / 2 - 200, canvas.height / 2 - 100, 400, 200);
+
   ctx.fillStyle = '#cc0066';
-  ctx.font = '48px "Dancing Script", cursive';
+  ctx.font = '32px "Dancing Script", cursive';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText("You found your soulmate! 💖", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("You collected all the love! 💖", canvas.width / 2, canvas.height / 2 - 30);
+  ctx.fillText("Happy Valentine's Day!", canvas.width / 2, canvas.height / 2 + 30);
 }
 
-// ====== 14. Основний цикл гри ======
+// ====== 11. Основний цикл гри ======
 let gameFinished = false;
 
 function gameLoop() {
   drawBackground();
   moveTowardsTarget();
-  drawSoulmate();
   drawPlayer();
   updateHearts();
   drawHearts();
@@ -158,14 +139,14 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// ====== 15. Запуск гри ======
+// ====== 12. Запуск гри ======
 function initGame() {
   resizeCanvas();
-  soulmate.x = canvas.width / 2 - soulmate.size / 2;
-  soulmate.y = canvas.height / 2 - soulmate.size / 2;
 
+  // Створюємо 5 правильних сердець і 5 розбитих
   for (let i = 0; i < 5; i++) {
-    hearts.push(createHeart());
+    hearts.push(createHeart(false)); // Повне серце
+    hearts.push(createHeart(true));  // Розбите серце
   }
 
   gameLoop();
