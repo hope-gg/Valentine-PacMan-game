@@ -29,8 +29,8 @@ bigHeartImage.onload = () => console.log('Big heart image loaded:', bigHeartImag
 const player = {
     x: canvas.width / 2 - 50,
     y: canvas.height - 150,
-    size: 120, // Increased size for better touch detection
-    speed: 6,  // Adjusted for smoother movement
+    size: 100, // Increased size for better touch detection
+    speed: 5,  // Adjusted for smoother movement
     dx: 0,
     dy: 0,
     target: null
@@ -42,10 +42,9 @@ let score = 0;
 
 // Finish point with big heart
 const finishPoint = {
-    x: canvas.width / 2 - 60,
+    x: canvas.width / 2 - 50,
     y: 50,
-    size: 150,
-    reached: false
+    size: 120
 };
 
 let gameFinished = false;
@@ -62,6 +61,7 @@ function moveTowardsTarget() {
         player.x += (dx / distance) * player.speed;
         player.y += (dy / distance) * player.speed;
     } else {
+        // Reached the target
         player.x = player.target.x;
         player.y = player.target.y;
         player.target = null;
@@ -87,33 +87,30 @@ function checkFinish() {
         player.y + player.size > finishPoint.y
     ) {
         gameFinished = true;
-        finishPoint.reached = true;
     }
 }
 
 // Function to display end message
 function displayEndMessage() {
     ctx.fillStyle = 'red';
-    ctx.font = '50px Arial';
+    ctx.font = '40px Arial';
     ctx.textAlign = 'center';
     ctx.fillText('Happy Valentine\'s Day!', canvas.width / 2, canvas.height / 2);
-    ctx.drawImage(bigHeartImage, canvas.width / 2 - 100, canvas.height / 2 - 200, 200, 200);
 }
 
 // Function to update and draw hearts
 function updateHearts() {
     hearts.forEach((heart, index) => {
+        // Check for collision with player
         if (
             player.x < heart.x + heart.size &&
             player.x + player.size > heart.x &&
             player.y < heart.y + heart.size &&
             player.y + player.size > heart.y
         ) {
-            hearts.splice(index, 1);
-            score += 1;
-            if (score % 5 === 0) {
-                addHeart();
-            }
+            hearts.splice(index, 1); // Remove heart
+            score += 1; // Increase score
+            addHeart(); // Add a new heart
         }
     });
 }
@@ -129,7 +126,7 @@ function addHeart() {
     hearts.push({
         x: Math.random() * (canvas.width - 50),
         y: Math.random() * (canvas.height / 2),
-        size: 70
+        size: 60 // Slightly larger hearts for better visibility on mobile
     });
 }
 
@@ -137,7 +134,6 @@ function addHeart() {
 canvas.addEventListener('click', (e) => {
     let clickX = e.clientX;
     let clickY = e.clientY;
-    let foundTarget = false;
     
     hearts.forEach((heart) => {
         if (
@@ -145,13 +141,8 @@ canvas.addEventListener('click', (e) => {
             clickY > heart.y && clickY < heart.y + heart.size
         ) {
             player.target = { x: heart.x, y: heart.y };
-            foundTarget = true;
         }
     });
-    
-    if (!foundTarget) {
-        player.target = { x: clickX - player.size / 2, y: clickY - player.size / 2 };
-    }
 });
 
 // Game loop
@@ -170,6 +161,7 @@ function gameLoop() {
     drawFinishPoint();
     checkFinish();
 
+    // Display score
     ctx.fillStyle = 'black';
     ctx.font = '24px Arial';
     ctx.fillText(`Score: ${score}`, 20, 40);
@@ -179,7 +171,7 @@ function gameLoop() {
 
 // Initialize game
 function initGame() {
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 7; i++) { // Increased initial number of hearts
         addHeart();
     }
     gameLoop();
