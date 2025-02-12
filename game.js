@@ -134,4 +134,3 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 window.addEventListener("load", gameLoop);
-
