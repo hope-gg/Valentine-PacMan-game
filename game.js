@@ -11,34 +11,47 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 
-// ====== 2. Гравець у вигляді сердечка ======
+// ====== 2. Гравець - ваш персонаж (залишаємо вашу логіку) ======
 const player = {
-  x: 100, y: 100, size: 50, speed: 4, target: null
+  x: canvas.width / 2 - 50,
+  y: canvas.height - 150,
+  size: 100,
+  speed: 5,
+  dx: 0,
+  dy: 0,
+  target: null
 };
 
-const finishPoint = { x: 0, y: 50, size: 80 };
+// ====== 3. Фінішна зона ======
+const finishPoint = {
+  x: canvas.width / 2 - 50,
+  y: 50,
+  size: 100
+};
 
-// ====== 3. Масив падаючих сердечок ======
+let gameFinished = false;
+
+// ====== 4. Масив падаючих сердечок ======
 let hearts = [];
+let score = 0;
 
-// Функція для створення сердечка
 function createHeart() {
   return {
-    x: Math.random() * canvas.width / devicePixelRatio,
+    x: Math.random() * (canvas.width - 50),
     y: -50,
     size: 20 + Math.random() * 30,
-    speedY: 1 + Math.random() * 2,
-    speedX: (Math.random() - 0.5) * 1,
-    angle: 0,
-    rotationSpeed: (Math.random() - 0.5) * 0.02
+    speedY: 1 + Math.random() * 2
   };
 }
 
-// SVG-зображення сердечка
-const heartIcon = new Image();
-heartIcon.src = "data:image/svg+xml,%3Csvg width='100' height='90' viewBox='0 0 100 90' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23ff6699' d='M50 85.5l-6.5-5.5C15.2 53.8 0 40.5 0 24.6 0 10.8 10.1 0 22.5 0c6.9 0 13.6 3.2 17.9 8.6C44.8 3.2 51.5 0 58.4 0 70.9 0 81 10.8 81 24.6c0 15.9-15.2 29.2-43.5 55.4L50 85.5z'/%3E%3C/svg%3E";
+// ====== 5. Завантаження персонажа (ваші зображення) ======
+const playerImage = new Image();
+playerImage.src = 'assets/ghost.png'; // ваш персонаж
 
-// ====== 4. Малювання градієнтного фону ======
+const heartImage = new Image();
+heartImage.src = 'assets/heart.png'; // сердечка
+
+// ====== 6. Малювання фону ======
 function drawBackground() {
   const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
   gradient.addColorStop(0, '#ffccee');
@@ -47,73 +60,99 @@ function drawBackground() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// ====== 5. Малювання гравця-сердечка ======
+// ====== 7. Малювання персонажа ======
 function drawPlayer() {
-  ctx.drawImage(heartIcon, player.x, player.y, player.size, player.size);
+  ctx.drawImage(playerImage, player.x, player.y, player.size, player.size);
 }
 
-// ====== 6. Малювання фінішної зони ======
+// ====== 8. Малювання фінішної зони ======
 function drawFinishPoint() {
   ctx.fillStyle = 'rgba(255, 200, 220, 0.6)';
   ctx.beginPath();
-  ctx.arc(finishPoint.x, finishPoint.y, finishPoint.size, 0, Math.PI * 2);
+  ctx.arc(finishPoint.x + finishPoint.size / 2, finishPoint.y + finishPoint.size / 2, finishPoint.size, 0, Math.PI * 2);
   ctx.fill();
 }
 
-// ====== 7. Оновлення анімації сердечок ======
+// ====== 9. Оновлення анімації сердечок ======
 function updateHearts() {
   hearts.forEach(heart => {
-    heart.x += heart.speedX;
     heart.y += heart.speedY;
   });
   hearts = hearts.filter(heart => heart.y < canvas.height);
 }
 
-// ====== 8. Малювання сердечок ======
+// ====== 10. Малювання сердечок ======
 function drawHearts() {
   hearts.forEach(heart => {
-    ctx.drawImage(heartIcon, heart.x, heart.y, heart.size, heart.size);
+    ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
   });
 }
 
-// ====== 9. Рух гравця до цілі ======
-function movePlayer() {
+// ====== 11. Рух персонажа ======
+function moveTowardsTarget() {
   if (!player.target) return;
   let dx = player.target.x - player.x;
   let dy = player.target.y - player.y;
   let distance = Math.sqrt(dx * dx + dy * dy);
+
   if (distance > player.speed) {
     player.x += (dx / distance) * player.speed;
     player.y += (dy / distance) * player.speed;
   } else {
+    player.x = player.target.x;
+    player.y = player.target.y;
     player.target = null;
   }
 }
 
-// ====== 10. Обробка кліку (рух гравця) ======
+// ====== 12. Обробка кліку (рух гравця) ======
 canvas.addEventListener('click', (e) => {
   player.target = { x: e.clientX, y: e.clientY };
 });
 
-// ====== 11. Відображення фінального тексту ======
+// ====== 13. Фінальний романтичний текст ======
+const endPhrases = [
+  "You are the song that my heart loves to sing.",
+  "All that you are is all that I’ll ever need.",
+  "Take my hand, take my whole life too, but I can't help falling in love with you",
+  "Every love song is about you. Happy Valentine's Day!",
+  "You’re my happily ever after.",
+  "You may hold my hand for a while, but you hold my heart forever.",
+  "The best things in life are better with you.",
+  "I never believed in luck until I found you.",
+  "Every love story is beautiful but ours is my favorite.",
+  "You’re the one. I’ve never been so sure of anything in my whole life."
+];
+
 function displayEndMessage() {
   ctx.fillStyle = '#cc0066';
   ctx.font = '48px "Dancing Script", cursive';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText("You are my heart's greatest joy 💖", canvas.width / 2, canvas.height / 2);
+  
+  const phrase = endPhrases[Math.floor(Math.random() * endPhrases.length)];
+  ctx.fillText(phrase, canvas.width / 2, canvas.height / 2);
 }
 
-// ====== 12. Основний ігровий цикл ======
+// ====== 14. Основний ігровий цикл ======
 function gameLoop() {
   drawBackground();
-  movePlayer();
+  moveTowardsTarget();
   drawFinishPoint();
   drawPlayer();
   updateHearts();
   drawHearts();
-  
-  if (player.y < finishPoint.y + finishPoint.size) {
+
+  if (
+    player.x < finishPoint.x + finishPoint.size &&
+    player.x + player.size > finishPoint.x &&
+    player.y < finishPoint.y + finishPoint.size &&
+    player.y + player.size > finishPoint.y
+  ) {
+    gameFinished = true;
+  }
+
+  if (gameFinished) {
     displayEndMessage();
     return;
   }
@@ -121,18 +160,17 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// ====== 13. Запуск гри ======
+// ====== 15. Запуск гри ======
 function initGame() {
   resizeCanvas();
-  player.x = canvas.width / 2;
-  player.y = canvas.height - 100;
-  finishPoint.x = canvas.width / 2;
-  finishPoint.y = 80;
-  
+  finishPoint.x = canvas.width / 2 - finishPoint.size / 2;
+  finishPoint.y = 50;
+
   for (let i = 0; i < 10; i++) {
     hearts.push(createHeart());
   }
   setInterval(() => hearts.push(createHeart()), 800);
+
   gameLoop();
 }
 
