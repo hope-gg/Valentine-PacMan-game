@@ -14,11 +14,11 @@ let player = { collectedHearts: 0, lives: 5 };
 let hearts = [];
 const requiredHearts = 5;
 const romanticMessages = [
-  "You are my forever love 💕",
+  "You are my forever love ❤️",
   "Every love story is beautiful, but ours is my favorite 💖",
-  "You hold my heart forever 💗",
+  "You hold my heart forever 💟",
   "You are my dream come true ✨",
-  "Love you to the moon and back 🌙💞"
+  "Love you to the moon and back 🌟💙"
 ];
 let finalMessage = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
 
@@ -35,15 +35,18 @@ const brokenHeartImage = new Image();
 brokenHeartImage.src = 'assets/heartbreak.png';
 const cupidImage = new Image();
 cupidImage.src = 'assets/cupid.png';
+const buttonImage = new Image();
+buttonImage.src = 'assets/button.png';
 
-const imagesLoaded = { heart: false, brokenHeart: false, cupid: false };
+const imagesLoaded = { heart: false, brokenHeart: false, cupid: false, button: false };
 
 heartImage.onload = () => imagesLoaded.heart = true;
 brokenHeartImage.onload = () => imagesLoaded.brokenHeart = true;
 cupidImage.onload = () => imagesLoaded.cupid = true;
+buttonImage.onload = () => imagesLoaded.button = true;
 
 function allImagesLoaded() {
-  return imagesLoaded.heart && imagesLoaded.brokenHeart && imagesLoaded.cupid;
+  return imagesLoaded.heart && imagesLoaded.brokenHeart && imagesLoaded.cupid && imagesLoaded.button;
 }
 
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
@@ -70,6 +73,9 @@ function drawWelcomeScreen() {
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
   ctx.fillText("LOVE IN THE AIR", canvas.width / 2, canvas.height / 2 - 50);
+  if (allImagesLoaded()) {
+    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
+  }
 }
 
 // ==== ГОЛОВНИЙ ІГРОВИЙ ЕКРАН ====
@@ -144,4 +150,3 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 window.addEventListener("load", gameLoop);
-
