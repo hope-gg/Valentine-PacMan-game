@@ -9,7 +9,8 @@
         body {
             margin: 0;
             font-family: 'Merriweather', serif;
-            background: #FDF3E7;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -19,7 +20,7 @@
         }
         canvas {
             border: 8px solid #C14444;
-            background: #FDF3E7;
+            background: rgba(253, 243, 231, 0.9);
             display: block;
             max-width: 100%;
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
@@ -30,22 +31,27 @@
             color: #C14444;
             text-align: center;
             text-shadow: 2px 2px #9E2A2A;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px;
+            border-radius: 10px;
         }
         .button {
             display: block;
             background: #C14444;
             color: white;
             font-size: 24px;
-            padding: 10px 20px;
+            padding: 15px 30px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 10px;
             margin: 20px auto;
             font-family: 'Playfair Display', serif;
             box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
         }
         .button:hover {
             background: #9E2A2A;
+            transform: scale(1.1);
         }
         #message-container {
             display: none;
@@ -54,6 +60,10 @@
             color: #C14444;
             font-family: 'Playfair Display', serif;
             margin-top: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
