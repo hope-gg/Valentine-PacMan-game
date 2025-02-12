@@ -3,13 +3,12 @@ const ctx = canvas.getContext('2d');
 
 // ==== АДАПТАЦІЯ ДЛЯ СМАРТФОНІВ ====
 function resizeCanvas() {
-    canvas.width = window.innerWidth * 0.9;
-    canvas.height = window.innerHeight * 0.8;
+    canvas.width = 400;
+    canvas.height = 600;
 }
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
 
-let screen = 1;
+let screen = 1; // 1 - Вхідний екран, 2 - Гра, 3 - Фінал
 let player = { collectedHearts: 0, lives: 5 };
 let hearts = [];
 const requiredHearts = 5;
@@ -53,11 +52,11 @@ function allImagesLoaded() {
 function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 100),
-    y: Math.random() * (canvas.height - 150),
-    size: 90,
+    y: Math.random() * (canvas.height - 200),
+    size: 90, // Трішки збільшив
     isBroken: isBroken,
-    speedX: (Math.random() - 0.5) * 2.5,
-    speedY: (Math.random() - 0.5) * 2.5,
+    speedX: (Math.random() - 0.5) * 2, 
+    speedY: (Math.random() - 0.5) * 2,
     opacity: 1,
     shrink: false
   };
@@ -68,7 +67,7 @@ function drawWelcomeScreen() {
   drawBackground();
   if (allImagesLoaded()) {
     ctx.drawImage(cupidImage, canvas.width / 2 - 50, 100, 100, 100);
-    ctx.drawImage(buttonImage, canvas.width / 2 - 80, canvas.height / 2 + 40, 160, 160);
+    ctx.drawImage(buttonImage, canvas.width / 2 - 50, canvas.height / 2, 100, 100);
   }
   ctx.fillStyle = "#D72638";
   ctx.font = "42px 'Playfair Display', serif";
@@ -80,7 +79,7 @@ function drawWelcomeScreen() {
 function drawGameScreen() {
   drawBackground();
   ctx.fillStyle = "#D72638";
-  ctx.font = "36px 'Inter', sans-serif";
+  ctx.font = "28px 'Inter', sans-serif";
   ctx.fillText(`Catch the hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 50);
 
   hearts.forEach(heart => {
@@ -98,11 +97,8 @@ function drawGameScreen() {
 
 // ==== ФІНАЛЬНИЙ ЕКРАН ====
 function drawEndScreen() {
-  drawBackground();
-  ctx.fillStyle = "#D72638";
-  ctx.font = "40px 'Playfair Display', serif";
-  ctx.textAlign = "center";
-  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width * 0.8);
+  document.getElementById("message-container").style.display = "block";
+  document.getElementById("message-container").innerText = finalMessage;
 }
 
 // ==== ОБРОБКА КЛІКІВ ====
@@ -114,11 +110,12 @@ canvas.addEventListener("click", (e) => {
     for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
   } else if (screen === 2) {
     hearts = hearts.filter(heart => {
-      if (Math.abs(e.clientX - heart.x) < 70 && Math.abs(e.clientY - heart.y) < 70) { // Покращена зона кліку
+      if (Math.abs(e.clientX - heart.x) < 50 && Math.abs(e.clientY - heart.y) < 50) { 
         if (!heart.isBroken) {
           player.collectedHearts++;
           if (player.collectedHearts >= requiredHearts) {
             screen = 3;
+            drawEndScreen();
           }
         } else {
           player.collectedHearts = Math.max(0, player.collectedHearts - 1);
@@ -134,7 +131,7 @@ canvas.addEventListener("click", (e) => {
 function gameLoop() {
   if (screen === 1) drawWelcomeScreen();
   else if (screen === 2) drawGameScreen();
-  else if (screen === 3) drawEndScreen();
   requestAnimationFrame(gameLoop);
 }
 window.addEventListener("load", gameLoop);
+
