@@ -29,8 +29,8 @@ bigHeartImage.onload = () => console.log('Big heart image loaded:', bigHeartImag
 const player = {
     x: canvas.width / 2 - 50,
     y: canvas.height - 150,
-    size: 100, // Increased size for better touch detection
-    speed: 5,  // Adjusted for smoother movement
+    size: 150, // Increased size for better touch detection on mobile
+    speed: 7,  // Adjusted for smoother movement
     dx: 0,
     dy: 0,
     target: null
