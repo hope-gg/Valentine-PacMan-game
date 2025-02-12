@@ -25,7 +25,7 @@ heartImage.onload = () => console.log('Heart image loaded:', heartImage.src);
 const player = {
     x: canvas.width / 2 - 50,
     y: canvas.height - 150,
-    size: 80, // Increased size for better touch detection
+    size: 100, // Increased size for better touch detection
     speed: 50,  // Adjusted speed for smoother mobile movement
     dx: 0,
     dy: 0
@@ -56,9 +56,9 @@ window.addEventListener('touchstart', (e) => {
     touchStartY = e.touches[0].clientY;
 });
 
-window.addEventListener('touchend', (e) => {
-    let touchEndX = e.changedTouches[0].clientX;
-    let touchEndY = e.changedTouches[0].clientY;
+window.addEventListener('touchmove', (e) => {
+    let touchEndX = e.touches[0].clientX;
+    let touchEndY = e.touches[0].clientY;
 
     let diffX = touchEndX - touchStartX;
     let diffY = touchEndY - touchStartY;
@@ -70,11 +70,14 @@ window.addEventListener('touchend', (e) => {
         player.dy = Math.sign(diffY) * player.speed;
         player.dx = 0;
     }
+    
+    touchStartX = touchEndX;
+    touchStartY = touchEndY;
+});
 
-    setTimeout(() => {
-        player.dx = 0;
-        player.dy = 0;
-    }, 150); // Stop movement after swipe
+window.addEventListener('touchend', () => {
+    player.dx = 0;
+    player.dy = 0;
 });
 
 // Functions to handle movement
@@ -205,4 +208,3 @@ function initGame() {
 
 // Start the game
 initGame();
-
