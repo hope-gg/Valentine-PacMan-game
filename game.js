@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 // ==== АДАПТАЦІЯ ДЛЯ СМАРТФОНІВ ====
 function resizeCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight * 0.9; // Уникаємо виходу за межі екрана
+    canvas.height = window.innerHeight * 0.9;
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -23,7 +23,7 @@ const romanticMessages = [
 
 // ==== ФОНОВА АНІМАЦІЯ ====
 function drawBackground() {
-  ctx.fillStyle = "#FCF5EB"; // Бежевий фон
+  ctx.fillStyle = "#FCF5EB";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
@@ -50,9 +50,9 @@ function allImagesLoaded() {
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
 function createHeart(isBroken = false) {
   return {
-    x: Math.random() * (canvas.width - 150),
+    x: Math.random() * (canvas.width - 200),
     y: -120,
-    size: 160, // Збільшене серце
+    size: 160,
     isBroken: isBroken,
     speed: 2 + Math.random() * 2,
     opacity: 1,
@@ -111,3 +111,40 @@ function drawEndScreen() {
   const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
   ctx.fillText(message, canvas.width / 2, canvas.height / 2);
 }
+
+// ==== ОБРОБКА КЛІКІВ ====
+canvas.addEventListener("click", (e) => {
+  if (screen === 1) {
+    screen = 2;
+    player.collectedHearts = 0;
+    hearts = [];
+    for (let i = 0; i < 8; i++) hearts.push(createHeart(Math.random() < 0.3));
+  } else if (screen === 2) {
+    hearts.forEach(heart => {
+      if (Math.abs(e.clientX - heart.x) < 80 && Math.abs(e.clientY - heart.y) < 80) {
+        if (!heart.isBroken) {
+          player.collectedHearts++;
+          if (player.collectedHearts >= requiredHearts) {
+            screen = 3;
+          }
+        }
+        heart.shrink = true;
+      }
+    });
+  } else if (screen === 3) {
+    screen = 1;
+  }
+});
+
+// ==== ЗАПУСК ====
+function gameLoop() {
+  if (screen === 1) {
+    drawWelcomeScreen();
+  } else if (screen === 2) {
+    drawGameScreen();
+  } else if (screen === 3) {
+    drawEndScreen();
+  }
+  requestAnimationFrame(gameLoop);
+}
+window.addEventListener("load", gameLoop);
