@@ -4,44 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentine's Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
+            font-family: 'Dancing Script', cursive;
+            background: linear-gradient(to bottom, #ffd1dc, #ff8fab);
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
-            background: #ffe6f2;
+            overflow: hidden;
             flex-direction: column;
+            text-align: center;
         }
         canvas {
-            border: 4px solid #C14444;
-            background: white;
-            display: block;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
         .button {
-            background: #C14444;
+            background: #ff4d6d;
             color: white;
-            font-size: 24px;
+            font-size: 22px;
             padding: 15px 30px;
             border: none;
-            cursor: pointer;
             border-radius: 10px;
-            margin-top: 20px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-family: 'Dancing Script', cursive;
             box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease;
         }
         .button:hover {
-            background: #9E2A2A;
-            transform: scale(1.1);
+            background: #e63950;
         }
     </style>
 </head>
 <body>
+    <h1 style="color: #ff4d6d; font-size: 40px;">Love is in the air... 💖</h1>
     <canvas id="gameCanvas"></canvas>
-    <button class="button" id="startButton">Start Game</button>
-
+    <button class="button" id="startButton">Start the Game</button>
     <script src="game.js"></script>
 </body>
 </html>
