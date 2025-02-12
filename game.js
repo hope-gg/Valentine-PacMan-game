@@ -7,8 +7,8 @@ canvas.height = window.innerHeight;
 const ghost = {
     x: 50,
     y: 50,
-    size: 60,
-    speed: 10,
+    size: 80,
+    speed: 5,
     img: new Image()
 };
 ghost.img.src = "assets/ghost.png";
@@ -19,8 +19,11 @@ for (let i = 0; i < numHearts; i++) {
     hearts.push({
         x: Math.random() * (canvas.width - 50),
         y: Math.random() * (canvas.height - 50),
-        size: Math.random() * 20 + 30,
-        img: new Image()
+        size: Math.random() * 20 + 40,
+        img: new Image(),
+        isClicked: false,
+        scale: 1,
+        alpha: 1
     });
     hearts[i].img.src = "assets/heart.png";
 }
@@ -34,6 +37,7 @@ const finishPoint = {
 finishPoint.img.src = "assets/big_heart.png";
 
 let score = 0;
+let target = null;
 
 function drawGhost() {
     ctx.drawImage(ghost.img, ghost.x, ghost.y, ghost.size, ghost.size);
@@ -41,7 +45,17 @@ function drawGhost() {
 
 function drawHearts() {
     hearts.forEach(heart => {
-        ctx.drawImage(heart.img, heart.x, heart.y, heart.size, heart.size);
+        if (heart.isClicked) {
+            heart.scale += 0.1;
+            heart.alpha -= 0.05;
+            if (heart.alpha <= 0) {
+                hearts.splice(hearts.indexOf(heart), 1);
+            }
+        }
+        ctx.save();
+        ctx.globalAlpha = heart.alpha;
+        ctx.drawImage(heart.img, heart.x, heart.y, heart.size * heart.scale, heart.size * heart.scale);
+        ctx.restore();
     });
 }
 
@@ -95,48 +109,45 @@ function showWinScreen() {
     };
 }
 
+function moveGhostTowardsTarget() {
+    if (target) {
+        let dx = target.x - ghost.x;
+        let dy = target.y - ghost.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance > 5) {
+            ghost.x += (dx / distance) * ghost.speed;
+            ghost.y += (dy / distance) * ghost.speed;
+        } else {
+            target = null;
+        }
+    }
+}
+
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawScore();
     drawHearts();
     drawGhost();
     drawFinishPoint();
+    moveGhostTowardsTarget();
     checkCollisions();
     requestAnimationFrame(gameLoop);
 }
 
-function moveGhost(x, y) {
-    ghost.x += x * ghost.speed;
-    ghost.y += y * ghost.speed;
-}
-
-document.addEventListener("keydown", event => {
-    switch (event.key) {
-        case "ArrowUp":
-            moveGhost(0, -1);
-            break;
-        case "ArrowDown":
-            moveGhost(0, 1);
-            break;
-        case "ArrowLeft":
-            moveGhost(-1, 0);
-            break;
-        case "ArrowRight":
-            moveGhost(1, 0);
-            break;
-    }
+canvas.addEventListener("click", event => {
+    const clickX = event.clientX;
+    const clickY = event.clientY;
+    hearts.forEach(heart => {
+        if (
+            clickX > heart.x &&
+            clickX < heart.x + heart.size &&
+            clickY > heart.y &&
+            clickY < heart.y + heart.size
+        ) {
+            heart.isClicked = true;
+            target = { x: heart.x, y: heart.y };
+        }
+    });
 });
-
-// Mobile controls
-const controls = document.createElement("div");
-controls.innerHTML = `
-    <div style="position:fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px;">
-        <button onclick="moveGhost(-1, 0)">⬅️</button>
-        <button onclick="moveGhost(0, -1)">⬆️</button>
-        <button onclick="moveGhost(0, 1)">⬇️</button>
-        <button onclick="moveGhost(1, 0)">➡️</button>
-    </div>
-`;
-document.body.appendChild(controls);
 
 gameLoop();
