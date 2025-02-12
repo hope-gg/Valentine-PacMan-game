@@ -99,8 +99,7 @@ function displayEndMessage() {
     ctx.fillStyle = 'red';
     ctx.font = '40px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Happy Valentine\'s Day!', canvas.width / 2, canvas.height / 2);
-}
+ctx.fillText("Take my hand, take my whole life too, but I can't help falling in love with you!", canvas.width / 2, canvas.height / 2);}
 
 // Function to update and draw hearts
 function updateHearts() {
