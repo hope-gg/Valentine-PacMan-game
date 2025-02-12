@@ -1,10 +1,11 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// ==== АДАПТАЦІЯ ДЛЯ СМАРТФОНІВ ====
+// ==== АДАПТАЦІЯ ДЛЯ СМАРТФОНІВ (ФІКС) ====
 function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth * window.devicePixelRatio;
+    canvas.height = window.innerHeight * window.devicePixelRatio;
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 }
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
@@ -22,7 +23,7 @@ const romanticMessages = [
   "Love you to the moon and back 🌙💞"
 ];
 
-// ==== ФУНКЦІЯ ДЛЯ МАЛЮВАННЯ ФОНУ (анімація градієнту) ====
+// ==== ФУНКЦІЯ ДЛЯ МАЛЮВАННЯ ФОНУ ====
 let gradientY = 0;
 function drawBackground() {
     gradientY += 0.3;
@@ -35,41 +36,35 @@ function drawBackground() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// ==== ВХІДНИЙ ЕКРАН (анімація кнопки) ====
-let buttonPulse = 1;
+// ==== ВХІДНИЙ ЕКРАН ====
 function drawWelcomeScreen() {
     drawBackground();
     ctx.fillStyle = '#cc0066';
-    ctx.font = '60px "Dancing Script", cursive';
+    ctx.font = '60px Arial';  // ФІКС ШРИФТУ
     ctx.textAlign = 'center';
     ctx.fillText("Love is in the air...", canvas.width / 2, canvas.height / 2 - 80);
 
-    // Анімація кнопки
-    buttonPulse = Math.sin(Date.now() / 300) * 10 + 100;
     ctx.fillStyle = "red";
-    ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2 + 100, buttonPulse, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillRect(canvas.width / 2 - 100, canvas.height / 2 + 50, 200, 80);
     ctx.fillStyle = "white";
     ctx.font = "48px Arial";
-    ctx.fillText("💗 Start 💗", canvas.width / 2, canvas.height / 2 + 110);
+    ctx.fillText("💗 Start 💗", canvas.width / 2, canvas.height / 2 + 100);
 }
 
-// ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ (анімація появи) ====
+// ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ (довше тримаються) ====
 function createHeart(isBroken = false) {
     return { 
         x: Math.random() * (canvas.width - 120), 
         y: Math.random() * (canvas.height - 200), 
-        size: 0, 
-        maxSize: Math.min(120, canvas.width * 0.15), 
+        size: Math.min(120, canvas.width * 0.15), 
         isBroken: isBroken, 
-        speed: 1 + Math.random(), 
+        speed: 0.5 + Math.random() * 0.8, // **ПОВІЛЬНІШИЙ РУХ**
         opacity: 1, 
         shrink: false 
     };
 }
 
-// ==== ГОЛОВНИЙ ІГРОВИЙ ЕКРАН (анімація появи сердець) ====
+// ==== ГОЛОВНИЙ ІГРОВИЙ ЕКРАН ====
 function drawGameScreen() {
     drawBackground();
     ctx.fillStyle = "#cc0066";
@@ -77,12 +72,9 @@ function drawGameScreen() {
     ctx.fillText(`Catch the hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 100);
 
     hearts.forEach(heart => {
-        if (heart.size < heart.maxSize) {
-            heart.size += 2;
-        }
         if (heart.shrink) {
-            heart.opacity -= 0.05;
-            heart.size -= 2;
+            heart.opacity -= 0.02; // **ПОВІЛЬНІШЕ ЗНИКНЕННЯ**
+            heart.size -= 1.5;
         }
         ctx.globalAlpha = heart.opacity;
         ctx.font = `${heart.size}px Arial`; 
@@ -92,13 +84,18 @@ function drawGameScreen() {
     });
 
     hearts = hearts.filter(heart => heart.opacity > 0);
+
+    // **ПОСТІЙНО ДОДАЄМО НОВІ СЕРЦЯ**
+    if (Math.random() < 0.02) {
+        hearts.push(createHeart(Math.random() < 0.3));
+    }
 }
 
-// ==== ФІНАЛЬНИЙ ЕКРАН ====
+// ==== ФІНАЛЬНИЙ ЕКРАН (ФІКС ТЕКСТУ) ====
 function drawEndScreen() {
     drawBackground();
     ctx.fillStyle = "#cc0066";
-    ctx.font = "60px 'Dancing Script', cursive"; 
+    ctx.font = "50px Arial";  // **ПРИБРАЛИ DANCING SCRIPT**
     ctx.textAlign = "center";
     const message = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
     ctx.fillText(message, canvas.width / 2, canvas.height / 2);
@@ -122,7 +119,7 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// ==== ОБРОБКА КЛІКІВ (вібрація та ефекти) ====
+// ==== ОБРОБКА КЛІКІВ ====
 canvas.addEventListener("click", (e) => {
     if (screen === 1) {
         if ("vibrate" in navigator) navigator.vibrate(200);
@@ -130,7 +127,7 @@ canvas.addEventListener("click", (e) => {
         player.collectedHearts = 0;
         player.lives = 5;
         hearts = [];
-        for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
+        for (let i = 0; i < 15; i++) hearts.push(createHeart(Math.random() < 0.3));  // **БІЛЬШЕ СЕРДЕЦЬ НА СТАРТІ**
     } else if (screen === 2) {
         hearts.forEach(heart => {
             if (Math.abs(e.clientX - heart.x) < 80 && Math.abs(e.clientY - heart.y) < 80) {
@@ -141,7 +138,7 @@ canvas.addEventListener("click", (e) => {
                         if ("vibrate" in navigator) navigator.vibrate(300);
                     }
                 } else {
-                    player.lives--;
+                    player.lives--; 
                     if ("vibrate" in navigator) navigator.vibrate(500);
                 }
                 heart.shrink = true;
