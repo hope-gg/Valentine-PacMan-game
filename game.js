@@ -18,8 +18,12 @@ heartImage.src = 'assets/heart.png';
 const ghostImage = new Image();
 ghostImage.src = 'assets/ghost.png';
 
+const bigHeartImage = new Image();
+bigHeartImage.src = 'assets/big_heart.png';
+
 ghostImage.onload = () => console.log('Ghost image loaded:', ghostImage.src);
 heartImage.onload = () => console.log('Heart image loaded:', heartImage.src);
+bigHeartImage.onload = () => console.log('Big heart image loaded:', bigHeartImage.src);
 
 // Player setup
 const player = {
@@ -36,11 +40,11 @@ const player = {
 let hearts = [];
 let score = 0;
 
-// Finish point
+// Finish point with big heart
 const finishPoint = {
     x: canvas.width / 2 - 50,
     y: 50,
-    size: 100
+    size: 120
 };
 
 let gameFinished = false;
@@ -69,17 +73,9 @@ function drawPlayer() {
     ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
 }
 
-// Function to draw finish point
+// Function to draw finish point with big heart
 function drawFinishPoint() {
-    ctx.fillStyle = 'lightblue';
-    ctx.fillRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
-    ctx.strokeStyle = 'darkblue';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
-    ctx.fillStyle = 'black';
-    ctx.font = '18px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Reach Here!', finishPoint.x + finishPoint.size / 2, finishPoint.y + 55);
+    ctx.drawImage(bigHeartImage, finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
 }
 
 // Function to check if player reached the finish point
