@@ -29,7 +29,7 @@ function drawBackground() {
 
 // ==== ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ ====
 const heartImage = new Image();
-heartImage.src = 'assets/heart (1).png';
+heartImage.src = 'assets/heart.png';
 const brokenHeartImage = new Image();
 brokenHeartImage.src = 'assets/broken-heart.png';
 const cupidImage = new Image();
