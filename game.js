@@ -35,7 +35,7 @@ brokenHeartImage.src = 'assets/broken-heart.png';
 const cupidImage = new Image();
 cupidImage.src = 'assets/cupid.png';
 const buttonImage = new Image();
-buttonImage.src = 'assets/love (1).png';
+buttonImage.src = 'assets/button.png';
 const imagesLoaded = { heart: false, brokenHeart: false, cupid: false, button: false };
 
 heartImage.onload = () => imagesLoaded.heart = true;
