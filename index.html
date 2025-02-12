@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentine's Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -18,45 +18,31 @@
             overflow: hidden;
             text-align: center;
         }
-        #gameContainer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            max-width: 550px; /* Тепер контейнер трохи ширший */
-            height: 95vh; /* Збільшено висоту */
-            padding: 10px;
-            box-sizing: border-box;
-            position: relative;
-        }
         #gameCanvas {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 9 / 16;
-            max-width: 500px;
-            max-height: 92vh;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 20px;
             box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
+            max-width: 90%;
+            height: 80vh;
+        }
+        #message-container {
+            font-size: 28px;
+            color: #D72638;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 80%;
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-    </div>
-    <script>
-        function resizeCanvas() {
-            const canvas = document.getElementById('gameCanvas');
-            const container = document.getElementById('gameContainer');
-            canvas.width = container.clientWidth * 0.95;
-            canvas.height = container.clientHeight * 0.9;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('load', resizeCanvas);
-    </script>
+    <canvas id="gameCanvas"></canvas>
+    <div id="message-container" style="display: none;"></div>
     <script src="game.js"></script>
 </body>
 </html>
