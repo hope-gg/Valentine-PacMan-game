@@ -1,90 +1,90 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.innerWidth * 0.9;
+canvas.height = window.innerHeight * 0.7;
 
 window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth * 0.9;
+    canvas.height = window.innerHeight * 0.7;
 });
 
 let screen = 1;
 let player = { collectedHearts: 0 };
 let hearts = [];
 const requiredHearts = 5;
-const loveMessages = [
-    "You are my forever love 💌",
-    "Every love story is beautiful, but ours is my favorite 💖",
-    "You hold my heart forever ❤️",
-    "You are my dream come true ✨",
-    "Love you to the moon and back 🌙💞"
+const funLoveMessages = [
+    "You're my Player 2 🎮💖",
+    "You stole my heart like a pro thief 🕵️‍♂️💘",
+    "Game over, but love is forever 😍",
+    "You + Me = Best Co-Op Mode 🎮💑",
+    "You’re my Ultimate Power-Up ❤️✨"
 ];
 
-// 🎨 Background with Soft Gradient
+// 🎨 Background with Arcade Feel
 function drawBackground() {
     const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    gradient.addColorStop(0, '#FFEBE9');
-    gradient.addColorStop(1, '#FFCDD2');
+    gradient.addColorStop(0, '#FF80AB');
+    gradient.addColorStop(1, '#FF4081');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// 💖 Creating Floating Hearts
+// 💖 Hearts with Motion
 function createHeart(isBroken = false) {
     return { 
-        x: Math.random() * canvas.width, 
+        x: Math.random() * (canvas.width - 100), 
         y: Math.random() * canvas.height, 
-        size: 160, 
+        size: 120, 
         isBroken, 
-        speed: 1 + Math.random(), 
-        opacity: 1 
+        speed: 0.8 + Math.random(), 
+        opacity: 1,
+        bounce: Math.random() * 5
     };
 }
 
-// 🎭 Screen Transitions
+// 🎭 Game Screens
 function drawWelcomeScreen() {
     drawBackground();
-    ctx.fillStyle = '#A21838';
-    ctx.font = '50px "Dancing Script", cursive';
+    ctx.fillStyle = '#FF1744';
+    ctx.font = '52px "Luckiest Guy", cursive';
     ctx.textAlign = 'center';
-    ctx.fillText("Love is in the air...", canvas.width / 2, canvas.height / 2 - 100);
+    ctx.fillText("Catch the Love! 💖", canvas.width / 2, canvas.height / 2 - 100);
 }
 
 // ❤️ Game Screen (Heart Catching)
 function drawGameScreen() {
     drawBackground();
-    ctx.fillStyle = "#A21838";
-    ctx.font = "38px 'Playfair Display', serif";
-    ctx.fillText(`Catch the hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 100);
+    ctx.fillStyle = "#FF1744";
+    ctx.font = "40px 'Luckiest Guy', cursive";
+    ctx.fillText(`Hearts: ${player.collectedHearts}/${requiredHearts}`, canvas.width / 2, 80);
 
     hearts.forEach(heart => {
-        if (heart.size < 180) {
-            heart.size += 2;
-        }
         ctx.globalAlpha = heart.opacity;
         ctx.font = `${heart.size}px 'Dancing Script', cursive`; 
         ctx.fillText(heart.isBroken ? "💔" : "💖", heart.x, heart.y);
         heart.y -= heart.speed;
+        heart.bounce += 0.1;
+        heart.x += Math.sin(heart.bounce) * 1.5;
         ctx.globalAlpha = 1;
     });
 
     hearts = hearts.filter(heart => heart.opacity > 0);
 }
 
-// 🎀 Romantic Ending Message
+// 🎀 End Screen with Fun Message
 function drawEndScreen() {
     drawBackground();
-    ctx.fillStyle = "#A21838";
-    ctx.font = "60px 'Dancing Script', cursive"; 
+    ctx.fillStyle = "#FF1744";
+    ctx.font = "52px 'Luckiest Guy', cursive"; 
     ctx.textAlign = "center";
-    const message = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+    const message = funLoveMessages[Math.floor(Math.random() * funLoveMessages.length)];
     ctx.fillText(message, canvas.width / 2, canvas.height / 2);
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#D50000";
     ctx.fillRect(canvas.width / 2 - 120, canvas.height / 2 + 100, 240, 90);
     ctx.fillStyle = "white";
-    ctx.font = "36px 'Playfair Display', serif";
+    ctx.font = "36px 'Luckiest Guy', cursive";
     ctx.fillText("Restart", canvas.width / 2, canvas.height / 2 + 155);
 }
 
@@ -100,25 +100,13 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
-// 📲 Click Interactions
+// 📲 Catching Hearts
 canvas.addEventListener("click", (e) => {
     if (screen === 1) {
         screen = 2;
         player.collectedHearts = 0;
         hearts = [];
-        for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.2));
-    } else if (screen === 2) {
-        hearts.forEach(heart => {
-            if (Math.abs(e.clientX - heart.x) < 90 && Math.abs(e.clientY - heart.y) < 90) {
-                if (!heart.isBroken) {
-                    player.collectedHearts++;
-                    if (player.collectedHearts >= requiredHearts) {
-                        screen = 3;
-                    }
-                }
-                heart.opacity = 0;
-            }
-        });
+        for (let i = 0; i < 8; i++) hearts.push(createHeart(Math.random() < 0.3));
     } else if (screen === 3) {
         screen = 1;
     }
