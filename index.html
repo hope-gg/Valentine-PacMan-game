@@ -4,85 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valentine's Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Merriweather&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            font-family: 'Merriweather', serif;
-            background: url('background.jpg') no-repeat center center fixed;
-            background-size: cover;
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
+            background: #ffe6f2;
             overflow: hidden;
             flex-direction: column;
         }
         canvas {
-            border: 8px solid #C14444;
-            background: rgba(253, 243, 231, 0.9);
+            background: white;
+            border: 2px solid #ff4d88;
             display: block;
             max-width: 100%;
-            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
         }
-        .title {
-            font-family: 'Playfair Display', serif;
-            font-size: 48px;
-            color: #C14444;
-            text-align: center;
-            text-shadow: 2px 2px #9E2A2A;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 10px;
-        }
-        .button {
-            display: block;
-            background: #C14444;
-            color: white;
-            font-size: 24px;
-            padding: 15px 30px;
-            border: none;
-            cursor: pointer;
-            border-radius: 10px;
-            margin: 20px auto;
-            font-family: 'Playfair Display', serif;
-            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.2s ease;
-        }
-        .button:hover {
-            background: #9E2A2A;
-            transform: scale(1.1);
-        }
-        #message-container {
-            display: none;
-            text-align: center;
-            font-size: 32px;
-            color: #C14444;
-            font-family: 'Playfair Display', serif;
+        button {
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2);
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            background: #ff4d88;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+        button:hover {
+            background: #e6005c;
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <h1 class="title">Valentine's Day Game</h1>
-        <canvas id="gameCanvas"></canvas>
-        <button class="button" id="startButton">Start</button>
-        <div id="message-container"></div>
-    </div>
-    
-    <script>
-        function startGame() {
-            console.log("Game started!");
-            document.getElementById("startButton").style.display = "none";
-            screen = 2;
-        }
+    <canvas id="gameCanvas"></canvas>
+    <button id="startButton">Start Game</button>
 
-        document.getElementById("startButton").addEventListener("click", startGame);
+    <script>
+        document.getElementById("startButton").addEventListener("click", () => {
+            document.getElementById("startButton").style.display = "none";
+            startGame();
+        });
     </script>
 
     <script src="game.js"></script>
