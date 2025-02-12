@@ -15,6 +15,7 @@
             justify-content: center;
             height: 100vh;
             overflow: hidden;
+            flex-direction: column;
         }
         canvas {
             border: 8px solid #C14444;
@@ -46,13 +47,22 @@
         .button:hover {
             background: #9E2A2A;
         }
+        #message-container {
+            display: none;
+            text-align: center;
+            font-size: 32px;
+            color: #C14444;
+            font-family: 'Playfair Display', serif;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
         <h1 class="title">Valentine's Day Game</h1>
         <canvas id="gameCanvas"></canvas>
-        <button class="button" onclick="startGame()">Start</button>
+        <button class="button" id="startButton" onclick="startGame()">Start</button>
+        <div id="message-container"></div>
     </div>
     <script src="game.js"></script>
 </body>
