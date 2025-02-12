@@ -30,12 +30,16 @@ function drawBackground() {
 // ==== ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ ====
 const heartImage = new Image();
 heartImage.src = 'assets/heart.png';
+
 const brokenHeartImage = new Image();
-brokenHeartImage.src = 'assets/broken-heart.png';
+brokenHeartImage.src = 'assets/heartbreak.png';
+
 const cupidImage = new Image();
 cupidImage.src = 'assets/cupid.png';
+
 const buttonImage = new Image();
 buttonImage.src = 'assets/button.png';
+
 const imagesLoaded = { heart: false, brokenHeart: false, cupid: false, button: false };
 
 heartImage.onload = () => imagesLoaded.heart = true;
