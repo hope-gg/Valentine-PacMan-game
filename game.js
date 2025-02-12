@@ -1,180 +1,110 @@
-// Basic setup for a simple Valentine-themed Pacman-style game
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-// Responsive canvas settings
-function resizeCanvas() {
-    canvas.width = document.documentElement.clientWidth;
-    canvas.height = document.documentElement.clientHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
-
-// Assets
-const heartImage = new Image();
-heartImage.src = 'assets/heart.png';
-
-const ghostImage = new Image();
-ghostImage.src = 'assets/ghost.png';
-
-const bigHeartImage = new Image();
-bigHeartImage.src = 'assets/big_heart.png';
-
-ghostImage.onload = () => console.log('Ghost image loaded:', ghostImage.src);
-heartImage.onload = () => console.log('Heart image loaded:', heartImage.src);
-bigHeartImage.onload = () => console.log('Big heart image loaded:', bigHeartImage.src);
-
-// Player setup
-const player = {
-    x: canvas.width / 2 - 50,
-    y: canvas.height - 150,
-    size: 150, // Increased size for better touch detection on mobile
-    speed: 7,  // Adjusted for smoother movement
-    dx: 0,
-    dy: 0,
-    target: null
+const ghost = {
+    x: 50,
+    y: 50,
+    size: 40,
+    speed: 5,
+    img: new Image()
 };
+ghost.img.src = "assets/ghost.png";
 
-// Hearts array
-let hearts = [];
+const hearts = [];
+const numHearts = 5;
+for (let i = 0; i < numHearts; i++) {
+    hearts.push({
+        x: Math.random() * (canvas.width - 30),
+        y: Math.random() * (canvas.height - 30),
+        size: 30,
+        img: new Image()
+    });
+    hearts[i].img.src = "assets/heart.png";
+}
+
+const finishPoint = {
+    x: canvas.width - 100,
+    y: canvas.height - 100,
+    size: 80,
+    img: new Image()
+};
+finishPoint.img.src = "assets/big_heart.png";
+
 let score = 0;
 
-// Finish point with big heart
-const finishPoint = {
-    x: canvas.width / 2 - 50,
-    y: 50,
-    size: 120
-};
-
-let gameFinished = false;
-
-// Function to move ghost towards a target
-function moveTowardsTarget() {
-    if (!player.target) return;
-
-    let dx = player.target.x - player.x;
-    let dy = player.target.y - player.y;
-    let distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance > player.speed) {
-        player.x += (dx / distance) * player.speed;
-        player.y += (dy / distance) * player.speed;
-    } else {
-        // Reached the target
-        player.x = player.target.x;
-        player.y = player.target.y;
-        player.target = null;
-        collectHeart();
-    }
+function drawGhost() {
+    ctx.drawImage(ghost.img, ghost.x, ghost.y, ghost.size, ghost.size);
 }
 
-// Function to draw player
-function drawPlayer() {
-    ctx.drawImage(ghostImage, player.x, player.y, player.size, player.size);
-}
-
-// Function to draw finish point with big heart
-function drawFinishPoint() {
-    if (bigHeartImage.complete) {
-        ctx.drawImage(bigHeartImage, finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
-    }
-}
-
-// Function to check if player reached the finish point
-function checkFinish() {
-    if (
-        player.x < finishPoint.x + finishPoint.size &&
-        player.x + player.size > finishPoint.x &&
-        player.y < finishPoint.y + finishPoint.size &&
-        player.y + player.size > finishPoint.y
-    ) {
-        gameFinished = true;
-    }
-}
-
-// Function to display end message
-function displayEndMessage() {
-    ctx.fillStyle = 'red';
-    ctx.font = '40px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText('Happy Valentine\'s Day!', canvas.width / 2, canvas.height / 2);
-}
-
-// Function to handle collecting hearts
-function collectHeart() {
-    hearts = hearts.filter(heart => !(player.x === heart.x && player.y === heart.y));
-    score += 1;
-    addHeart();
-}
-
-// Function to draw hearts
 function drawHearts() {
     hearts.forEach(heart => {
-        ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
+        ctx.drawImage(heart.img, heart.x, heart.y, heart.size, heart.size);
     });
 }
 
-// Function to add a new heart
-function addHeart() {
-    hearts.push({
-        x: Math.random() * (canvas.width - 50),
-        y: Math.random() * (canvas.height / 2),
-        size: 60 // Slightly larger hearts for better visibility on mobile
-    });
+function drawFinishPoint() {
+    ctx.drawImage(finishPoint.img, finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
 }
 
-// Click event to move towards the clicked heart
-canvas.addEventListener('click', (e) => {
-    let clickX = e.clientX;
-    let clickY = e.clientY;
-    
-    let foundTarget = false;
-    hearts.forEach((heart) => {
+function drawScore() {
+    ctx.fillStyle = "black";
+    ctx.font = "20px Arial";
+    ctx.fillText("Score: " + score, 20, 30);
+}
+
+function checkCollisions() {
+    hearts.forEach((heart, index) => {
         if (
-            clickX > heart.x && clickX < heart.x + heart.size &&
-            clickY > heart.y && clickY < heart.y + heart.size
+            ghost.x < heart.x + heart.size &&
+            ghost.x + ghost.size > heart.x &&
+            ghost.y < heart.y + heart.size &&
+            ghost.y + ghost.size > heart.y
         ) {
-            player.target = { x: heart.x, y: heart.y };
-            foundTarget = true;
+            hearts.splice(index, 1);
+            score += 10;
         }
     });
-    
-    if (!foundTarget) {
-        player.target = null; // Prevent movement if click was outside hearts
-    }
-});
 
-// Game loop
+    if (
+        ghost.x < finishPoint.x + finishPoint.size &&
+        ghost.x + ghost.size > finishPoint.x &&
+        ghost.y < finishPoint.y + finishPoint.size &&
+        ghost.y + ghost.size > finishPoint.y
+    ) {
+        setTimeout(() => {
+            alert("Happy Valentine's Day! ❤️");
+        }, 100);
+    }
+}
+
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (gameFinished) {
-        displayEndMessage();
-        return;
-    }
-
-    moveTowardsTarget();
-    drawPlayer();
+    drawScore();
     drawHearts();
+    drawGhost();
     drawFinishPoint();
-    checkFinish();
-
-    // Display score
-    ctx.fillStyle = 'black';
-    ctx.font = '24px Arial';
-    ctx.fillText(`Score: ${score}`, 20, 40);
-
+    checkCollisions();
     requestAnimationFrame(gameLoop);
 }
 
-// Initialize game
-function initGame() {
-    for (let i = 0; i < 7; i++) { // Increased initial number of hearts
-        addHeart();
+document.addEventListener("keydown", event => {
+    switch (event.key) {
+        case "ArrowUp":
+            ghost.y -= ghost.speed;
+            break;
+        case "ArrowDown":
+            ghost.y += ghost.speed;
+            break;
+        case "ArrowLeft":
+            ghost.x -= ghost.speed;
+            break;
+        case "ArrowRight":
+            ghost.x += ghost.speed;
+            break;
     }
-    gameLoop();
-}
+});
 
-// Start the game
-initGame();
+gameLoop();
