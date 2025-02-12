@@ -23,10 +23,10 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 100vw;
-            max-width: 450px;
-            height: 100vh;
-            max-height: 800px;
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            max-height: 850px;
             padding: 10px;
             box-sizing: border-box;
         }
@@ -34,7 +34,7 @@
             width: 100%;
             height: auto;
             aspect-ratio: 9 / 16; /* Фіксоване співвідношення сторін */
-            max-width: 400px;
+            max-width: 450px;
             max-height: 90vh;
             background: rgba(255, 255, 255, 0.7);
             border-radius: 20px;
@@ -42,15 +42,18 @@
         }
         h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 42px;
+            font-size: 36px;
             color: #D72638;
             text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            margin: 0 auto;
+            white-space: normal;
         }
         .button {
             background: url('assets/button.png') no-repeat center center;
             background-size: contain;
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             border: none;
             cursor: pointer;
             margin-top: 20px;
@@ -70,7 +73,7 @@
             background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 90%;
+            max-width: 80%;
             word-wrap: break-word;
             white-space: pre-wrap;
         }
@@ -78,6 +81,7 @@
 </head>
 <body>
     <div id="gameContainer">
+        <h1 id="gameTitle">LOVE IN THE AIR</h1>
         <canvas id="gameCanvas"></canvas>
         <div id="message-container" style="display: none;"></div>
     </div>
@@ -85,8 +89,8 @@
         function resizeCanvas() {
             const canvas = document.getElementById('gameCanvas');
             const container = document.getElementById('gameContainer');
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight * 0.9;
+            canvas.width = container.clientWidth * 0.9;
+            canvas.height = container.clientHeight * 0.85;
         }
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('load', resizeCanvas);
@@ -94,4 +98,3 @@
     <script src="game.js"></script>
 </body>
 </html>
-
