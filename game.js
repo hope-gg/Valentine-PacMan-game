@@ -76,7 +76,9 @@ function drawPlayer() {
 
 // Function to draw finish point with big heart
 function drawFinishPoint() {
-    ctx.drawImage(bigHeartImage, finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
+    if (bigHeartImage.complete) {
+        ctx.drawImage(bigHeartImage, finishPoint.x, finishPoint.y, finishPoint.size, finishPoint.size);
+    }
 }
 
 // Function to check if player reached the finish point
@@ -127,14 +129,20 @@ canvas.addEventListener('click', (e) => {
     let clickX = e.clientX;
     let clickY = e.clientY;
     
+    let foundTarget = false;
     hearts.forEach((heart) => {
         if (
             clickX > heart.x && clickX < heart.x + heart.size &&
             clickY > heart.y && clickY < heart.y + heart.size
         ) {
             player.target = { x: heart.x, y: heart.y };
+            foundTarget = true;
         }
     });
+    
+    if (!foundTarget) {
+        player.target = null; // Prevent movement if click was outside hearts
+    }
 });
 
 // Game loop
