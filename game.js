@@ -26,9 +26,10 @@ const player = {
     x: canvas.width / 2 - 50,
     y: canvas.height - 150,
     size: 100, // Increased size for better touch detection
-    speed: 50,  // Adjusted speed for smoother mobile movement
+    speed: 5,  // Adjusted for smoother movement
     dx: 0,
-    dy: 0
+    dy: 0,
+    target: null
 };
 
 // Hearts array
@@ -44,58 +45,23 @@ const finishPoint = {
 
 let gameFinished = false;
 
-// Input handling
-let keys = {};
-window.addEventListener('keydown', (e) => keys[e.key] = true);
-window.addEventListener('keyup', (e) => keys[e.key] = false);
+// Function to move ghost towards a target
+function moveTowardsTarget() {
+    if (!player.target) return;
 
-// Touch controls for mobile
-let touchStartX = 0, touchStartY = 0;
-window.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-});
+    let dx = player.target.x - player.x;
+    let dy = player.target.y - player.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
 
-window.addEventListener('touchmove', (e) => {
-    let touchEndX = e.touches[0].clientX;
-    let touchEndY = e.touches[0].clientY;
-
-    let diffX = touchEndX - touchStartX;
-    let diffY = touchEndY - touchStartY;
-
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-        player.dx = Math.sign(diffX) * player.speed;
-        player.dy = 0;
+    if (distance > player.speed) {
+        player.x += (dx / distance) * player.speed;
+        player.y += (dy / distance) * player.speed;
     } else {
-        player.dy = Math.sign(diffY) * player.speed;
-        player.dx = 0;
+        // Reached the target
+        player.x = player.target.x;
+        player.y = player.target.y;
+        player.target = null;
     }
-    
-    touchStartX = touchEndX;
-    touchStartY = touchEndY;
-});
-
-window.addEventListener('touchend', () => {
-    player.dx = 0;
-    player.dy = 0;
-});
-
-// Functions to handle movement
-function movePlayer() {
-    if (keys['ArrowLeft'] || keys['a']) player.dx = -player.speed;
-    else if (keys['ArrowRight'] || keys['d']) player.dx = player.speed;
-    else player.dx = 0;
-
-    if (keys['ArrowUp'] || keys['w']) player.dy = -player.speed;
-    else if (keys['ArrowDown'] || keys['s']) player.dy = player.speed;
-    else player.dy = 0;
-
-    player.x += player.dx;
-    player.y += player.dy;
-
-    // Prevent player from moving off-screen
-    player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
-    player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
 }
 
 // Function to draw player
@@ -139,12 +105,6 @@ function displayEndMessage() {
 // Function to update and draw hearts
 function updateHearts() {
     hearts.forEach((heart, index) => {
-        heart.y += 6; // Move hearts down faster for mobile screens
-        if (heart.y > canvas.height) {
-            heart.y = -heart.size; // Reset position to top
-            heart.x = Math.random() * (canvas.width - heart.size);
-        }
-
         // Check for collision with player
         if (
             player.x < heart.x + heart.size &&
@@ -174,6 +134,21 @@ function addHeart() {
     });
 }
 
+// Click event to move towards the clicked heart
+canvas.addEventListener('click', (e) => {
+    let clickX = e.clientX;
+    let clickY = e.clientY;
+    
+    hearts.forEach((heart) => {
+        if (
+            clickX > heart.x && clickX < heart.x + heart.size &&
+            clickY > heart.y && clickY < heart.y + heart.size
+        ) {
+            player.target = { x: heart.x, y: heart.y };
+        }
+    });
+});
+
 // Game loop
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -183,7 +158,7 @@ function gameLoop() {
         return;
     }
 
-    movePlayer();
+    moveTowardsTarget();
     drawPlayer();
     updateHearts();
     drawHearts();
