@@ -1,7 +1,7 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// ====== 1. Робимо Canvas респонсивним ======
+// ====== 1. Респонсивний Canvas ======
 function resizeCanvas() {
   const ratio = window.devicePixelRatio || 1;
   canvas.width = window.innerWidth * ratio;
@@ -17,35 +17,35 @@ const player = {
   y: canvas.height - 100,
   size: 100,
   speed: 5,
-  dx: 0,
-  dy: 0,
   target: null,
   collectedHearts: 0
 };
 
-// ====== 3. Фінішна зона (портал) ======
-const finishPoint = {
+// ====== 3. "Друга половинка" (фініш) ======
+const soulmate = {
   x: canvas.width / 2 - 50,
   y: canvas.height / 2 - 50,
   size: 120,
-  active: false // Портал активується після збору 5 сердечок
+  active: false
 };
 
-// ====== 4. Сердечка для збору ======
+// ====== 4. Сердечка ======
 let hearts = [];
-let score = 0;
 
 function createHeart() {
   return {
     x: Math.random() * (canvas.width - 80) + 40,
     y: Math.random() * (canvas.height - 200) + 100,
-    size: 50,
+    size: 50
   };
 }
 
-// ====== 5. Завантаження персонажа ======
+// ====== 5. Завантаження персонажів ======
 const playerImage = new Image();
-playerImage.src = 'assets/ghost.png';
+playerImage.src = 'assets/ghost.png'; // Гравець-привид
+
+const soulmateImage = new Image();
+soulmateImage.src = 'assets/soulmate.png'; // Друга половинка
 
 const heartImage = new Image();
 heartImage.src = 'assets/heart.png';
@@ -64,19 +64,14 @@ function drawPlayer() {
   ctx.drawImage(playerImage, player.x, player.y, player.size, player.size);
 }
 
-// ====== 8. Малювання порталу ======
-function drawFinishPoint() {
-  if (!finishPoint.active) {
-    ctx.fillStyle = 'rgba(180, 180, 180, 0.3)';
-  } else {
-    ctx.fillStyle = 'rgba(255, 150, 220, 0.8)';
-  }
-  ctx.beginPath();
-  ctx.arc(finishPoint.x + finishPoint.size / 2, finishPoint.y + finishPoint.size / 2, finishPoint.size, 0, Math.PI * 2);
-  ctx.fill();
+// ====== 8. Малювання другої половинки ======
+function drawSoulmate() {
+  ctx.globalAlpha = soulmate.active ? 1 : 0.5; // Робимо її трохи прозорою, якщо гравець ще не зібрав сердечка
+  ctx.drawImage(soulmateImage, soulmate.x, soulmate.y, soulmate.size, soulmate.size);
+  ctx.globalAlpha = 1;
 }
 
-// ====== 9. Оновлення анімації сердечок ======
+// ====== 9. Оновлення сердечок ======
 function updateHearts() {
   hearts = hearts.filter(heart => {
     if (
@@ -87,9 +82,9 @@ function updateHearts() {
     ) {
       player.collectedHearts++;
       if (player.collectedHearts >= 5) {
-        finishPoint.active = true; // Активуємо портал
+        soulmate.active = true; // Активуємо фініш
       }
-      return false; // Видаляємо з масиву
+      return false;
     }
     return true;
   });
@@ -118,17 +113,14 @@ function moveTowardsTarget() {
     player.target = null;
   }
 
-  // Якщо портал активний - всмоктує гравця
-  if (finishPoint.active) {
-    let portalDx = (finishPoint.x + finishPoint.size / 2) - player.x;
-    let portalDy = (finishPoint.y + finishPoint.size / 2) - player.y;
-    let portalDist = Math.sqrt(portalDx * portalDx + portalDy * portalDy);
+  // Якщо гравець зустрічає свою другу половинку
+  if (soulmate.active) {
+    let dxSoulmate = (soulmate.x + soulmate.size / 2) - player.x;
+    let dySoulmate = (soulmate.y + soulmate.size / 2) - player.y;
+    let distSoulmate = Math.sqrt(dxSoulmate * dxSoulmate + dySoulmate * dySoulmate);
 
-    if (portalDist < 50) {
+    if (distSoulmate < 40) {
       gameFinished = true;
-    } else {
-      player.x += (portalDx / portalDist) * 2;
-      player.y += (portalDy / portalDist) * 2;
     }
   }
 }
@@ -144,7 +136,7 @@ function displayEndMessage() {
   ctx.font = '48px "Dancing Script", cursive';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText("You completed the journey of love! 💖", canvas.width / 2, canvas.height / 2);
+  ctx.fillText("You found your soulmate! 💖", canvas.width / 2, canvas.height / 2);
 }
 
 // ====== 14. Основний цикл гри ======
@@ -153,12 +145,11 @@ let gameFinished = false;
 function gameLoop() {
   drawBackground();
   moveTowardsTarget();
-  drawFinishPoint();
+  drawSoulmate();
   drawPlayer();
   updateHearts();
   drawHearts();
 
-  // Якщо гравець потрапив у портал
   if (gameFinished) {
     displayEndMessage();
     return;
@@ -170,8 +161,8 @@ function gameLoop() {
 // ====== 15. Запуск гри ======
 function initGame() {
   resizeCanvas();
-  finishPoint.x = canvas.width / 2 - finishPoint.size / 2;
-  finishPoint.y = canvas.height / 2 - finishPoint.size / 2;
+  soulmate.x = canvas.width / 2 - soulmate.size / 2;
+  soulmate.y = canvas.height / 2 - soulmate.size / 2;
 
   for (let i = 0; i < 5; i++) {
     hearts.push(createHeart());
@@ -181,4 +172,3 @@ function initGame() {
 }
 
 window.addEventListener('load', initGame);
-
