@@ -205,3 +205,4 @@ function initGame() {
 
 // Start the game
 initGame();
+
