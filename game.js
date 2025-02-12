@@ -34,6 +34,15 @@ const brokenHeartImage = new Image();
 brokenHeartImage.src = 'assets/heartbreak.png';
 const cupidImage = new Image();
 cupidImage.src = 'assets/cupid.png';
+const imagesLoaded = { heart: false, brokenHeart: false, cupid: false };
+
+heartImage.onload = () => imagesLoaded.heart = true;
+brokenHeartImage.onload = () => imagesLoaded.brokenHeart = true;
+cupidImage.onload = () => imagesLoaded.cupid = true;
+
+function allImagesLoaded() {
+  return imagesLoaded.heart && imagesLoaded.brokenHeart && imagesLoaded.cupid;
+}
 
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
 function createHeart(isBroken = false) {
@@ -51,7 +60,9 @@ function createHeart(isBroken = false) {
 // ==== ВХІДНИЙ ЕКРАН ====
 function drawWelcomeScreen() {
   drawBackground();
-  ctx.drawImage(cupidImage, canvas.width / 2 - 50, 100, 100, 100);
+  if (allImagesLoaded()) {
+    ctx.drawImage(cupidImage, canvas.width / 2 - 50, 100, 100, 100);
+  }
   ctx.fillStyle = "#D72638";
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
@@ -71,10 +82,12 @@ function drawGameScreen() {
       heart.size -= 2;
     }
     ctx.globalAlpha = heart.opacity;
-    if (heart.isBroken) {
-      ctx.drawImage(brokenHeartImage, heart.x, heart.y, heart.size, heart.size);
-    } else {
-      ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
+    if (allImagesLoaded()) {
+      if (heart.isBroken) {
+        ctx.drawImage(brokenHeartImage, heart.x, heart.y, heart.size, heart.size);
+      } else {
+        ctx.drawImage(heartImage, heart.x, heart.y, heart.size, heart.size);
+      }
     }
     heart.y += heart.speed;
     ctx.globalAlpha = 1;
