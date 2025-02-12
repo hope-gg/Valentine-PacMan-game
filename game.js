@@ -29,19 +29,26 @@ function drawBackground() {
 
 // ==== ЗАВАНТАЖЕННЯ ЗОБРАЖЕНЬ ====
 const heartImage = new Image();
-heartImage.src = 'assets/love (1).png';
+heartImage.src = './assets/heart (1).png';
 const brokenHeartImage = new Image();
-brokenHeartImage.src = 'assets/heartbreak.png';
+brokenHeartImage.src = './assets/broken-heart.png';
 const cupidImage = new Image();
-cupidImage.src = 'assets/cupid.png';
-const imagesLoaded = { heart: false, brokenHeart: false, cupid: false };
+cupidImage.src = './assets/cupid.png';
 
-heartImage.onload = () => imagesLoaded.heart = true;
-brokenHeartImage.onload = () => imagesLoaded.brokenHeart = true;
-cupidImage.onload = () => imagesLoaded.cupid = true;
+let imagesLoaded = 0;
+const totalImages = 3;
+
+[heartImage, brokenHeartImage, cupidImage].forEach(img => {
+  img.onload = () => {
+    imagesLoaded++;
+    if (imagesLoaded === totalImages) {
+      gameLoop(); // Почати гру після завантаження всіх ресурсів
+    }
+  };
+});
 
 function allImagesLoaded() {
-  return imagesLoaded.heart && imagesLoaded.brokenHeart && imagesLoaded.cupid;
+  return imagesLoaded === totalImages;
 }
 
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
@@ -49,7 +56,7 @@ function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 100),
     y: -100,
-    size: 100,
+    size: 120,
     isBroken: isBroken,
     speed: 1.5 + Math.random() * 2,
     opacity: 1,
@@ -66,7 +73,7 @@ function drawWelcomeScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "42px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  ctx.fillText("Catch the Hearts! 💕", canvas.width / 2, canvas.height / 2 - 50);
+  ctx.fillText("Spread Love", canvas.width / 2, canvas.height / 2 - 50);
 }
 
 // ==== ГОЛОВНИЙ ІГРОВИЙ ЕКРАН ====
