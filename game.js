@@ -56,8 +56,8 @@ function createHeart(isBroken = false) {
     y: Math.random() * (canvas.height - 200),
     size: 80,
     isBroken: isBroken,
-    speedX: (Math.random() - 0.5) * 1.5,
-    speedY: (Math.random() - 0.5) * 1.5,
+    speedX: (Math.random() - 0.5) * 2.5, // Збільшена швидкість для плавності
+    speedY: (Math.random() - 0.5) * 2.5,
     opacity: 1,
     shrink: false
   };
@@ -107,7 +107,7 @@ function drawEndScreen() {
   ctx.fillStyle = "#D72638";
   ctx.font = "40px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width - 40);
+  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width * 0.8);
 }
 
 // ==== ОБРОБКА КЛІКІВ ====
@@ -119,7 +119,7 @@ canvas.addEventListener("click", (e) => {
     for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
   } else if (screen === 2) {
     hearts = hearts.filter(heart => {
-      if (Math.abs(e.clientX - heart.x) < 50 && Math.abs(e.clientY - heart.y) < 50) {
+      if (Math.abs(e.clientX - heart.x) < 60 && Math.abs(e.clientY - heart.y) < 60) { // Покращена зона кліку
         if (!heart.isBroken) {
           player.collectedHearts++;
           if (player.collectedHearts >= requiredHearts) {
@@ -150,4 +150,3 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 window.addEventListener("load", gameLoop);
-
