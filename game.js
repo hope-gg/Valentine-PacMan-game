@@ -30,21 +30,24 @@ function createHeart(isBroken = false) {
     x: Math.random() * (canvas.width - 80) + 40,
     y: Math.random() * (canvas.height - 200) + 100,
     size: 50,
-    isBroken: isBroken // Розбите чи повне сердечко
+    isBroken: isBroken
   };
 }
 
-// ====== 4. Завантаження графіки ======
+// ====== 4. Завантаження персонажа ======
 const playerImage = new Image();
-playerImage.src = 'assets/ghost.png';
+playerImage.src = 'assets/ghost.png'; // Гравець
 
+// ====== 5. Використання сердечок через Base64 ======
+// Повне рожеве сердечко 💖
 const fullHeartImage = new Image();
-fullHeartImage.src = 'assets/full_heart.png'; // Повне рожеве серце
+fullHeartImage.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTAwIDkwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9IiNmZjY2OTkiIGQ9Ik01MCA4NS41bC02LjUtNS41QzE1LjIgNTMuOCAwIDQwLjUgMCAyNC42IDAgMTAuOCAxMC4xIDAgMjIuNSAwYzYuOSAwIDEzLjYgMy4yIDE3LjkgOC42QzQ0LjggMy4yIDUxLjUgMCA1OC40IDAgNzAuOSAwIDgxIDEwLjggODEgMjQuNmMwIDE1LjktMTUuMiAyOS4yLTQzLjUgNTUuNEw1MCA4NS41eiIvPjwvc3ZnPg==";
 
+// Розбите серце 💔
 const brokenHeartImage = new Image();
-brokenHeartImage.src = 'assets/broken_heart.png'; // Розбите серце
+brokenHeartImage.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjkwIiB2aWV3Qm94PSIwIDAgMTAwIDkwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9IiNkMTM1NTUiIGQ9Ik01MCA4NS41bC02LjUtNS41QzE1LjIgNTMuOCAwIDQwLjUgMCAyNC42IDAgMTAuOCAxMC4xIDAgMjIuNSAwYzYuOSAwIDEzLjYgMy4yIDE3LjkgOC42QzQ0LjggMy4yIDUxLjUgMCA1OC40IDAgNzAuOSAwIDgxIDEwLjggODEgMjQuNmMwIDE1LjktMTUuMiAyOS4yLTQzLjUgNTUuNEw1MCA4NS41eiBNNDQuNCAzMS42bDIuOCAzLjctMi4xIDQuNyAxMS42IDYuNi04LjUgMTAuNyA3LjIgMTIuNi0xNC4xLTguMyAzLjMtNy4yLTQuMSA5LjEgMy43eiIvPjwvc3ZnPg==";
 
-// ====== 5. Малювання фону ======
+// ====== 6. Малювання фону ======
 function drawBackground() {
   const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
   gradient.addColorStop(0, '#ffccee');
@@ -53,12 +56,12 @@ function drawBackground() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// ====== 6. Малювання персонажа ======
+// ====== 7. Малювання персонажа ======
 function drawPlayer() {
   ctx.drawImage(playerImage, player.x, player.y, player.size, player.size);
 }
 
-// ====== 7. Оновлення та малювання сердечок ======
+// ====== 8. Оновлення та малювання сердечок ======
 function updateHearts() {
   hearts = hearts.filter(heart => {
     if (
@@ -86,7 +89,7 @@ function drawHearts() {
   });
 }
 
-// ====== 8. Рух гравця ======
+// ====== 9. Рух гравця ======
 function moveTowardsTarget() {
   if (!player.target) return;
   let dx = player.target.x - player.x;
@@ -103,12 +106,12 @@ function moveTowardsTarget() {
   }
 }
 
-// ====== 9. Обробка кліку ======
+// ====== 10. Обробка кліку ======
 canvas.addEventListener('click', (e) => {
   player.target = { x: e.clientX, y: e.clientY };
 });
 
-// ====== 10. Фінальне вікно з текстом ======
+// ====== 11. Фінальне вікно з текстом ======
 function displayEndMessage() {
   ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
   ctx.fillRect(canvas.width / 2 - 200, canvas.height / 2 - 100, 400, 200);
@@ -121,7 +124,7 @@ function displayEndMessage() {
   ctx.fillText("Happy Valentine's Day!", canvas.width / 2, canvas.height / 2 + 30);
 }
 
-// ====== 11. Основний цикл гри ======
+// ====== 12. Основний цикл гри ======
 let gameFinished = false;
 
 function gameLoop() {
@@ -139,7 +142,7 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// ====== 12. Запуск гри ======
+// ====== 13. Запуск гри ======
 function initGame() {
   resizeCanvas();
 
