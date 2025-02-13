@@ -54,7 +54,7 @@ function createHeart(isBroken = false) {
   return {
     x: Math.random() * (canvas.width - 100),
     y: Math.random() * (canvas.height - 150),
-    size: 90,
+    size: 100, // Трохи більше для кращого кліку
     isBroken: isBroken,
     speedX: (Math.random() - 0.5) * 2.5,
     speedY: (Math.random() - 0.5) * 2.5,
@@ -105,29 +105,35 @@ function drawEndScreen() {
   ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width * 0.8);
 }
 
-// ==== ОБРОБКА КЛІКІВ ====
+// ==== ПОКРАЩЕНА ОБРОБКА КЛІКІВ ====
 canvas.addEventListener("click", (e) => {
-  if (screen === 1) {
-    screen = 2;
-    player.collectedHearts = 0;
-    hearts = [];
-    for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
-  } else if (screen === 2) {
-    hearts = hearts.filter(heart => {
-      if (Math.abs(e.clientX - heart.x) < 70 && Math.abs(e.clientY - heart.y) < 70) { // Покращена зона кліку
-        if (!heart.isBroken) {
-          player.collectedHearts++;
-          if (player.collectedHearts >= requiredHearts) {
-            screen = 3;
-          }
-        } else {
-          player.collectedHearts = Math.max(0, player.collectedHearts - 1);
-        }
-        return false;
-      }
-      return true;
-    });
-  }
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    if (screen === 1) {
+        screen = 2;
+        player.collectedHearts = 0;
+        hearts = [];
+        for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
+    } else if (screen === 2) {
+        hearts = hearts.filter(heart => {
+            const distance = Math.hypot(clickX - (heart.x + heart.size / 2), clickY - (heart.y + heart.size / 2));
+
+            if (distance < heart.size * 0.7) { // Покращена зона кліку
+                if (!heart.isBroken) {
+                    player.collectedHearts++;
+                    if (player.collectedHearts >= requiredHearts) {
+                        screen = 3;
+                    }
+                } else {
+                    player.collectedHearts = Math.max(0, player.collectedHearts - 1);
+                }
+                return false;
+            }
+            return true;
+        });
+    }
 });
 
 // ==== ЗАПУСК ====
@@ -138,3 +144,4 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 window.addEventListener("load", gameLoop);
+
