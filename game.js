@@ -120,7 +120,7 @@ function drawGameScreen() {
 function drawEndScreen() {
   drawBackground();
   ctx.fillStyle = "#D72638";
-  ctx.font = "40px 'Playfair Display', serif";
+  ctx.font = "700 36px 'Playfair Display', serif";
   ctx.textAlign = "center";
   ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width * 0.8);
 }
