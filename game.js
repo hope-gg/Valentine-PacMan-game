@@ -32,17 +32,7 @@ const romanticMessages = [
   "𝗬𝗼𝘂 𝗺𝗮𝗸𝗲 𝗺𝘆 𝘄𝗼𝗿𝗹𝗱 𝗯𝗲𝗮𝘂𝘁𝗶𝗳𝘂𝗹, 𝗼𝗻𝗲 𝘀𝗺𝗶𝗹𝗲 𝗮𝘁 𝗮 𝘁𝗶𝗺𝗲.",
   "𝗢𝘂𝗿 𝗹𝗼𝘃𝗲 𝗶𝘀 𝗮 𝘀𝘁𝗼𝗿𝘆 𝗜 𝗻𝗲𝘃𝗲𝗿 𝘄𝗮𝗻𝘁 𝘁𝗼 𝗲𝗻𝗱."
   "𝗬𝗼𝘂 𝗮𝗻𝗱 𝗺𝗲, 𝘁𝗼𝗴𝗲𝘁𝗵𝗲𝗿 𝗳𝗼𝗿𝗲𝘃𝗲𝗿—𝗻𝗼𝘁𝗵𝗶𝗻𝗴 𝗲𝗹𝘀𝗲 𝗺𝗮𝘁𝘁𝗲𝗿𝘀.",
-  "𝗜 𝗹𝗼𝘃𝗲 𝘆𝗼𝘂, 𝗻𝗼𝘁 𝗷𝘂𝘀𝘁 𝗳𝗼𝗿 𝘄𝗵𝗼 𝘆𝗼𝘂 𝗮𝗿𝗲, 𝗯𝘂𝘁 𝗳𝗼𝗿 𝗵𝗼𝘄 𝘆𝗼𝘂 𝗺𝗮𝗸𝗲 𝗺𝗲 𝗳𝗲𝗲𝗹.",
-  "You are the love story I always dreamed of.",
-  "With you, my heart has finally found its home.",
-  "Every second with you is a beautiful memory in the making.",
-  "You are my greatest adventure and my safest place.",
-  "Loving you feels like poetry in motion.",
-  "Your love lights up my world like nothing else.",
-  "In your arms, I have found my forever.",
-  "I never knew love could be this magical until I met you.",
-  "You make my heart skip a beat in the most beautiful way.",
-  "Every day with you is my favorite love story."
+  "𝗜 𝗹𝗼𝘃𝗲 𝘆𝗼𝘂, 𝗻𝗼𝘁 𝗷𝘂𝘀𝘁 𝗳𝗼𝗿 𝘄𝗵𝗼 𝘆𝗼𝘂 𝗮𝗿𝗲, 𝗯𝘂𝘁 𝗳𝗼𝗿 𝗵𝗼𝘄 𝘆𝗼𝘂 𝗺𝗮𝗸𝗲 𝗺𝗲 𝗳𝗲𝗲𝗹."
 ];
 
 let finalMessage = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
