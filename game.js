@@ -101,31 +101,33 @@ function drawEndScreen() {
   document.getElementById("message-container").innerText = finalMessage;
 }
 
-// ==== ОБРОБКА КЛІКІВ ====
+// ==== ПОКРАЩЕНА ОБРОБКА КЛІКІВ ====
 canvas.addEventListener("click", (e) => {
-  if (screen === 1) {
-    screen = 2;
-    player.collectedHearts = 0;
-    hearts = [];
-    for (let i = 0; i < 10; i++) hearts.push(createHeart(Math.random() < 0.3));
-  } else if (screen === 2) {
-    hearts = hearts.filter(heart => {
-      if (Math.abs(e.clientX - heart.x) < 50 && Math.abs(e.clientY - heart.y) < 50) { 
-        if (!heart.isBroken) {
-          player.collectedHearts++;
-          if (player.collectedHearts >= requiredHearts) {
-            screen = 3;
-            drawEndScreen();
-          }
-        } else {
-          player.collectedHearts = Math.max(0, player.collectedHearts - 1);
-        }
-        return false;
-      }
-      return true;
-    });
-  }
+    const rect = canvas.getBoundingClientRect(); // Отримуємо позицію canvas
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    if (screen === 2) {
+        hearts = hearts.filter(heart => {
+            const distance = Math.hypot(clickX - (heart.x + heart.size / 2), clickY - (heart.y + heart.size / 2));
+
+            if (distance < heart.size * 0.6) { // Точність кліку покращена
+                if (!heart.isBroken) {
+                    player.collectedHearts++;
+                    if (player.collectedHearts >= requiredHearts) {
+                        screen = 3;
+                        document.getElementById("message-container").style.display = "block"; // Показуємо фінальний текст
+                    }
+                } else {
+                    player.collectedHearts = Math.max(0, player.collectedHearts - 1);
+                }
+                return false; // Видаляємо серце після кліку
+            }
+            return true;
+        });
+    }
 });
+
 
 // ==== ЗАПУСК ====
 function gameLoop() {
