@@ -113,6 +113,15 @@ function createHeart(isBroken = false) {
 
     return newHeart;
 }
+function checkHeartBalance() {
+    let intactHearts = hearts.filter(heart => !heart.isBroken).length;
+    
+    // Додаємо нові серця, якщо їх залишилося менше потрібної кількості
+    while (intactHearts < requiredHearts - player.collectedHearts) {
+        hearts.push(createHeart(false));
+        intactHearts++;
+    }
+}
 
 
 // ==== ВХІДНИЙ ЕКРАН ====
