@@ -100,9 +100,25 @@ function drawGameScreen() {
 function drawEndScreen() {
   drawBackground();
   ctx.fillStyle = "#D72638";
-  ctx.font = "40px 'Playfair Display', serif";
+  ctx.font = "bold 36px 'Playfair Display', serif";
   ctx.textAlign = "center";
-  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width * 0.8);
+  
+  // Додаємо красиве повідомлення в стилі "меседж"
+  const boxWidth = canvas.width * 0.75;
+  const boxHeight = 100;
+  const boxX = (canvas.width - boxWidth) / 2;
+  const boxY = (canvas.height / 2) - boxHeight / 2;
+
+  // Малюємо білу "рамку" для повідомлення
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+  ctx.strokeStyle = "#D72638";
+  ctx.lineWidth = 4;
+  ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
+
+  // Текст усередині
+  ctx.fillStyle = "#D72638";
+  ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2);
 }
 
 // ==== ПОКРАЩЕНА ОБРОБКА КЛІКІВ ====
