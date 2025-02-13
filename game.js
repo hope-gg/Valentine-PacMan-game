@@ -119,24 +119,41 @@ function drawGameScreen() {
 // ==== ФІНАЛЬНИЙ ЕКРАН ====
 function drawEndScreen() {
   drawBackground();
+  
   ctx.fillStyle = "#D72638";
-  ctx.font = "bold 36px 'Playfair Display', serif";
+  ctx.font = "bold 32px 'Playfair Display', serif";
   ctx.textAlign = "center";
 
-  document.fonts.ready.then(() => {
-      ctx.fillText(finalMessage, canvas.width / 2, canvas.height / 2, canvas.width * 0.8);
-  });
-}
+  const maxWidth = canvas.width * 0.7; // Встановлення максимальної ширини тексту
+  const lineHeight = 40; // Висота рядка
+  const x = canvas.width / 2;
+  const y = canvas.height / 2;
 
-
-// ==== ФУНКЦІЯ ДОДАВАННЯ СЕРДЕЦЬ ====
-function checkHeartBalance() {
-    let intactHearts = hearts.filter(heart => !heart.isBroken).length;
-    while (intactHearts < requiredHearts - player.collectedHearts) {
-        hearts.push(createHeart(false)); // Додаємо тільки цілі серця
-        intactHearts++;
+  // Розбиваємо текст на рядки, щоб не виходив за межі
+  const words = finalMessage.split(" ");
+  let line = "";
+  let lines = [];
+  
+  for (let i = 0; i < words.length; i++) {
+    let testLine = line + words[i] + " ";
+    let testWidth = ctx.measureText(testLine).width;
+    
+    if (testWidth > maxWidth && i > 0) {
+      lines.push(line);
+      line = words[i] + " ";
+    } else {
+      line = testLine;
     }
+  }
+  lines.push(line); // Додаємо останній рядок
+
+  // Відображаємо текст, рівномірно розподіляючи рядки
+  let startY = y - (lines.length * lineHeight) / 2;
+  for (let i = 0; i < lines.length; i++) {
+    ctx.fillText(lines[i], x, startY + (i * lineHeight));
+  }
 }
+
 
 // ==== ПОКРАЩЕНА ОБРОБКА КЛІКІВ ====
 canvas.addEventListener("click", (e) => {
