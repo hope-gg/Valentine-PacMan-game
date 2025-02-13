@@ -54,9 +54,6 @@ function getFinalMessage() {
 // Визначаємо фінальне повідомлення для 3-го екрану
 let finalMessage = getFinalMessage();
 
-// Визначаємо фінальне повідомлення для 3-го екрану
-let finalMessage = getFinalMessage();
-
 
 // ==== ФОНОВА АНІМАЦІЯ ====
 function drawBackground() {
