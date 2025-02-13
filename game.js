@@ -71,17 +71,36 @@ function allImagesLoaded() {
 
 // ==== ФУНКЦІЯ ДЛЯ СЕРДЕЦЬ ====
 function createHeart(isBroken = false) {
-  return {
-    x: Math.random() * (canvas.width - 100),
-    y: Math.random() * (canvas.height - 150),
-    size: 100, // Трохи більше для кращого кліку
-    isBroken: isBroken,
-    speedX: (Math.random() - 0.5) * 2.5,
-    speedY: (Math.random() - 0.5) * 2.5,
-    opacity: 1,
-    shrink: false
-  };
+    let newHeart;
+    let isOverlapping;
+    let attempts = 0;
+    const maxAttempts = 100;
+
+    do {
+        isOverlapping = false;
+        newHeart = {
+            x: Math.random() * (canvas.width - 100),
+            y: Math.random() * (canvas.height - 150),
+            size: 100,
+            isBroken: isBroken,
+            speedX: (Math.random() - 0.5) * 2.5,
+            speedY: (Math.random() - 0.5) * 2.5,
+            opacity: 1,
+            shrink: false
+        };
+
+        for (let heart of hearts) {
+            if (Math.hypot(newHeart.x - heart.x, newHeart.y - heart.y) < 120) {
+                isOverlapping = true;
+                break;
+            }
+        }
+        attempts++;
+    } while (isOverlapping && attempts < maxAttempts);
+
+    return newHeart;
 }
+
 
 // ==== ВХІДНИЙ ЕКРАН ====
 function drawWelcomeScreen() {
